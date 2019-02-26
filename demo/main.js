@@ -1,5 +1,3 @@
-import './main.css'
-
 import Vue from 'vue'
 import VueZoomer from '../src/index'
 import App from './app.vue'

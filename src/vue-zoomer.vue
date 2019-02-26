@@ -1,3 +1,4 @@
+<!-- vue-zoomer: https://github.com/jarvisniu/vue-zoomer -->
 <template>
   <div
     class="vue-zoomer"
@@ -10,14 +11,15 @@
     @touchmove="onTouchMove"
   >
     <div class="zoomer" :style="wrapperStyle">
-    <slot/>
+      <slot></slot>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    minScale: { type: Number, default: 1 },
+    minScale: { type: Number, default: 0.1 },
     maxScale: { type: Number, default: 5 },
   },
   data () {
@@ -35,10 +37,11 @@ export default {
       isMouseDown: false,
       mousePosX: -1,
       mousePosY: -1,
+      twoFingerInitDist: 0,
     }
   },
   mounted () {
-    console.log('container Width/Height: ', this.containerWidth, this.containerHeight)
+    // console.log('container Width/Height: ', this.containerWidth, this.containerHeight)
     window.addEventListener('resize', this.onResize)
     this.onResize()
   },
@@ -66,11 +69,14 @@ export default {
     // Simplify: This can be regard as vector pointer to old-image-center scaling.
     // FIX TouchPad on Mac is much sensitive
     onMouseWheel (ev) {
-      let normMousePosX = this.mousePosX / this.containerWidth
-      let normMousePosY = this.mousePosY / this.containerHeight
       // Value basis: One mouse wheel (wheelDelta=+-120) means 1.25/0.8 scale.
       let scaleDelta = Math.pow(1.25, ev.wheelDelta / 120)
       // console.log('onMouseWheel', ev.wheelDelta, scaleDelta)
+      this.tryToScale(scaleDelta)
+    },
+    tryToScale (scaleDelta) {
+      let normMousePosX = this.mousePosX / this.containerWidth
+      let normMousePosY = this.mousePosY / this.containerHeight
       let newScale = this.scale * scaleDelta
       if (newScale < this.minScale) newScale = this.minScale
       else if (newScale > this.maxScale) newScale = this.maxScale
@@ -107,20 +113,47 @@ export default {
     },
     onTouchStart (ev) {
       if (ev.touches.length === 1) {
+        this.mousePosX = ev.touches[0].clientX
+        this.mousePosY = ev.touches[0].clientY
         this.isMouseDown = true
+      } else if (ev.touches.length === 2) {
+        this.isMouseDown = true
+        // pos
+        this.mousePosX = (ev.touches[0].clientX + ev.touches[1].clientX) / 2
+        this.mousePosY = (ev.touches[0].clientY + ev.touches[1].clientY) / 2
+        // dist
+        let distX = ev.touches[0].clientX - ev.touches[1].clientX
+        let distY = ev.touches[0].clientY - ev.touches[1].clientY
+        this.twoFingerInitDist = Math.sqrt(distX * distX + distY * distY)
+      }
+      // console.log('onTouchStart', ev.touches.length, this.mousePosX, this.mousePosY)
+    },
+    onTouchEnd (ev) {
+      if (ev.touches.length === 0) {
+        this.isMouseDown = false
+      } else if (ev.touches.length === 1) {
         this.mousePosX = ev.touches[0].clientX
         this.mousePosY = ev.touches[0].clientY
       }
-      console.log('onTouchStart', ev.touches.length, this.mousePosX, this.mousePosY)
-    },
-    onTouchEnd (ev) {
-      if (ev.touches.length === 0) this.isMouseDown = false
-      console.log('onTouchEnd', ev.touches.length)
+      // console.log('onTouchEnd', ev.touches.length)
     },
     onTouchMove (ev) {
       if (ev.touches.length === 1) {
         let touch = ev.touches[0]
         this.onPointerMove(touch.clientX, touch.clientY)
+      } else if (ev.touches.length === 2) {
+        // pos
+        let newMousePosX = (ev.touches[0].clientX + ev.touches[1].clientX) / 2
+        let newMousePosY = (ev.touches[0].clientY + ev.touches[1].clientY) / 2
+        this.onPointerMove(newMousePosX, newMousePosY)
+        this.mousePosX = newMousePosX
+        this.mousePosY = newMousePosY
+        // dist
+        let distX = ev.touches[0].clientX - ev.touches[1].clientX
+        let distY = ev.touches[0].clientY - ev.touches[1].clientY
+        let newTwoFingerDist = Math.sqrt(distX * distX + distY * distY)
+        this.tryToScale(newTwoFingerDist / this.twoFingerInitDist)
+        this.twoFingerInitDist = newTwoFingerDist
       }
       // console.log('onTouchMove', this.mousePosX, this.mousePosY)
     },

@@ -1,7 +1,8 @@
 {
   "name": "vue-zoomer",
   "version": "0.1.0",
-  "main": "src/vue-zoomer.vue",
+  "description": "Zoom the image or other thing with mouse or touch",
+  "main": "src/index.js",
   "scripts": {
     "dev": "parcel demo/index.html --port 5100",
     "build": "parcel build src/index.js --out-file vue-zoomer.js",

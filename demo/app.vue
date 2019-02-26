@@ -1,22 +1,7 @@
 <template>
-  <div class="app">
-    <vue-zoomer class="zoomer">
-      <img src="./assets/landscape-1.jpg" class="image">
+  <div style="width: 100vw; height: 100vh;">
+    <vue-zoomer style="width: 100%; height: 100%;">
+      <img src="./assets/landscape-1.jpg" style="object-fit: contain; width: 100%; height: 100%;">
     </vue-zoomer>
   </div>
 </template>
-
-<style lang="stylus" scoped>
-.app
-  width 100vw
-  height 100vh
-
-.zoomer
-  width 100%
-  height: 100%
-
-.image
-  width 100%
-  height 100%
-  object-fit contain
-</style>
