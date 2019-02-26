@@ -16,6 +16,10 @@
 
 <script>
 export default {
+  props: {
+    minScale: { type: Number, default: 1 },
+    maxScale: { type: Number, default: 5 },
+  },
   data () {
     return {
       // Container sizes, used to determin the initial zoomer size.
@@ -26,7 +30,7 @@ export default {
       // After rotation or resize, these values will keep still.
       translateX: 0,
       translateY: 0,
-      scale: 0.75, // Relative to the container
+      scale: 1, // Relative to the container
       // Mouse states
       isMouseDown: false,
       mousePosX: -1,
@@ -67,7 +71,11 @@ export default {
       // Value basis: One mouse wheel (wheelDelta=+-120) means 1.25/0.8 scale.
       let scaleDelta = Math.pow(1.25, ev.wheelDelta / 120)
       // console.log('onMouseWheel', ev.wheelDelta, scaleDelta)
-      this.scale *= scaleDelta
+      let newScale = this.scale * scaleDelta
+      if (newScale < this.minScale) newScale = this.minScale
+      else if (newScale > this.maxScale) newScale = this.maxScale
+      scaleDelta = newScale / this.scale
+      this.scale = newScale
       this.translateX = (0.5 + this.translateX - normMousePosX) * scaleDelta + normMousePosX - 0.5
       this.translateY = (0.5 + this.translateY - normMousePosY) * scaleDelta + normMousePosY - 0.5
     },
