@@ -19,7 +19,7 @@
 <script>
 export default {
   props: {
-    minScale: { type: Number, default: 0.1 },
+    minScale: { type: Number, default: 1 },
     maxScale: { type: Number, default: 5 },
   },
   data () {
