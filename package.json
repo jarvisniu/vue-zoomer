@@ -2,11 +2,12 @@
   "name": "vue-zoomer",
   "version": "0.1.0",
   "description": "Zoom the image or other thing with mouse or touch",
-  "main": "src/index.js",
+  "main": "dist/vue-zoomer.js",
   "scripts": {
     "dev": "parcel demo/index.html --port 5100",
-    "build": "parcel build src/index.js --out-file vue-zoomer.js",
-    "clean": "rm -rf .cache && rm -rf dist"
+    "clean": "rm -rf .cache && rm -rf dist",
+    "build-only": "npm run clean && parcel build src/index.js --global VueZoomer --out-file vue-zoomer.js",
+    "build": "npm run clean && npm run build-only"
   },
   "repository": "git@github.com:jarvisniu/vue-zoomer.git",
   "author": "Jarvis Niu <jarvisniu@gmail.com>",
