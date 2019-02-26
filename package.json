@@ -1,22 +1,21 @@
 {
   "name": "vue-zoomer",
   "version": "0.1.0",
-  "main": "index.js",
+  "main": "src/vue-zoomer.vue",
   "scripts": {
-    "dev": "parcel demo/01.basic/index.html --port 5100"
+    "dev": "parcel demo/index.html --port 5100",
+    "build": "parcel build src/index.js --out-file vue-zoomer.js",
+    "clean": "rm -rf .cache && rm -rf dist"
   },
   "repository": "git@github.com:jarvisniu/vue-zoomer.git",
   "author": "Jarvis Niu <jarvisniu@gmail.com>",
   "license": "MIT",
-  "dependencies": {
-    "app.vue": "^0.1.10",
+  "devDependencies": {
+    "@vue/component-compiler-utils": "^2.6.0",
     "parcel-bundler": "^1.11.0",
     "stylus": "^0.54.5",
     "vue": "^2.6.7",
-    "vue-hot-reload-api": "^2.3.3"
-  },
-  "devDependencies": {
-    "@vue/component-compiler-utils": "^2.6.0",
+    "vue-hot-reload-api": "^2.3.3",
     "vue-template-compiler": "^2.6.7"
   }
 }

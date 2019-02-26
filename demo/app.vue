@@ -1,16 +1,10 @@
 <template>
   <div class="app">
-    <!-- <div>App</div> -->
     <vue-zoomer class="zoomer">
-      <img src="../assets/landscape-1.jpg" class="image">
+      <img src="./assets/landscape-1.jpg" class="image">
     </vue-zoomer>
   </div>
 </template>
-
-<style lang="stylus">
-body
-  margin 0
-</style>
 
 <style lang="stylus" scoped>
 .app
