@@ -42,6 +42,7 @@ export default {
       pointerPosX: -1,
       pointerPosY: -1,
       twoFingerInitDist: 0,
+      panLocked: true,
       // Others
       tapDetector: null,
     }
@@ -101,8 +102,10 @@ export default {
         let pixelDeltaX = newMousePosX - this.pointerPosX
         let pixelDeltaY = newMousePosY - this.pointerPosY
         // console.log('pixelDeltaX, pixelDeltaY', pixelDeltaX, pixelDeltaY)
-        this.translateX += pixelDeltaX / this.containerWidth
-        this.translateY += pixelDeltaY / this.containerHeight
+        if (!this.panLocked) {
+          this.translateX += pixelDeltaX / this.containerWidth
+          this.translateY += pixelDeltaY / this.containerHeight
+        }
       }
       this.pointerPosX = newMousePosX
       this.pointerPosY = newMousePosY
@@ -110,6 +113,7 @@ export default {
     // reset
     onDoubleTap () {
       this.scale = 1
+      this.panLocked = true
       this.translateX = 0
       this.translateY = 0
     },
@@ -125,7 +129,7 @@ export default {
       if (Math.abs(ev.wheelDelta) === 120) {
         // Throttle the TouchPad pinch on Mac, or it will be too sensitive
         let currTime = Date.now()
-        if (currTime - this.lastFullWheelTime > 100) {
+        if (currTime - this.lastFullWheelTime > 50) {
           this.onMouseWheelDo(ev)
           this.lastFullWheelTime = currTime
         }
@@ -138,6 +142,7 @@ export default {
       let scaleDelta = Math.pow(1.25, ev.wheelDelta / 120)
       // console.log('onMouseWheel', ev.wheelDelta, scaleDelta)
       this.tryToScale(scaleDelta)
+      this.panLocked = this.scale === 1
     },
     onMouseDown (ev) {
       this.isPointerDown = true
@@ -149,6 +154,7 @@ export default {
     },
     onMouseUp (ev) {
       this.isPointerDown = false
+      this.panLocked = this.scale === 1
     },
     onMouseMove (ev) {
       this.onPointerMove(ev.clientX, ev.clientY)
@@ -175,6 +181,7 @@ export default {
     onTouchEnd (ev) {
       if (ev.touches.length === 0) {
         this.isPointerDown = false
+        this.panLocked = this.scale === 1
       } else if (ev.touches.length === 1) {
         this.pointerPosX = ev.touches[0].clientX
         this.pointerPosY = ev.touches[0].clientY
