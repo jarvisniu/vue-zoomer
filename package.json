@@ -6,10 +6,15 @@
   "scripts": {
     "dev": "parcel demo/index.html --port 5100",
     "clean": "rm -rf .cache && rm -rf dist",
-    "build-only": "npm run clean && parcel build src/index.js --global VueZoomer --out-file vue-zoomer.js",
+    "build-only": "npm run clean && parcel build src/index.js --global VueZoomer --out-file vue-zoomer.js --no-source-maps",
     "build": "npm run clean && npm run build-only"
   },
-  "keywords": ["zoom", "zoomer", "image", "vue"],
+  "keywords": [
+    "zoom",
+    "zoomer",
+    "image",
+    "vue"
+  ],
   "repository": "git@github.com:jarvisniu/vue-zoomer.git",
   "author": "Jarvis Niu <jarvisniu@gmail.com>",
   "license": "MIT",

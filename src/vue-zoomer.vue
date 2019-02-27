@@ -37,6 +37,7 @@ export default {
       translateY: 0,
       scale: 1, // Relative to the container
       // Mouse states
+      lastFullWheelTime: 0,
       isPointerDown: false,
       pointerPosX: -1,
       pointerPosY: -1,
@@ -81,6 +82,8 @@ export default {
   methods: {
     // Main Logic --------------------------------------------------------------
     // scale
+    // Zoom the image with the point at the pointer(mouse or pintch center) pinned.
+    // Simplify: This can be regard as vector pointer to old-image-center scaling.
     tryToScale (scaleDelta) {
       let normMousePosX = this.pointerPosX / this.containerWidth
       let normMousePosY = this.pointerPosY / this.containerHeight
@@ -117,10 +120,20 @@ export default {
       this.containerHeight = parseFloat(styles.height)
     },
     // Mouse Events ------------------------------------------------------------
-    // Mouse wheel scroll: Zoom the image with the point at the mouse pointer pinned.
-    // Simplify: This can be regard as vector pointer to old-image-center scaling.
-    // FIX TouchPad on Mac is much sensitive
+    // Mouse wheel scroll,  TrackPad pinch or TrackPad scroll
     onMouseWheel (ev) {
+      if (Math.abs(ev.wheelDelta) === 120) {
+        // Throttle the TouchPad pinch on Mac, or it will be too sensitive
+        let currTime = Date.now()
+        if (currTime - this.lastFullWheelTime > 100) {
+          this.onMouseWheelDo(ev)
+          this.lastFullWheelTime = currTime
+        }
+      } else {
+        this.onMouseWheelDo(ev)
+      }
+    },
+    onMouseWheelDo (ev) {
       // Value basis: One mouse wheel (wheelDelta=+-120) means 1.25/0.8 scale.
       let scaleDelta = Math.pow(1.25, ev.wheelDelta / 120)
       // console.log('onMouseWheel', ev.wheelDelta, scaleDelta)
@@ -132,14 +145,14 @@ export default {
       // This will cause the pointerPosX/Y NOT sync, then we will need to fix it on mousedown event.
       this.pointerPosX = ev.clientX
       this.pointerPosY = ev.clientY
-      // console.log('onMouseDown', ev.clientX, ev.clientY)
+      // console.log('onMouseDown', ev)
     },
     onMouseUp (ev) {
       this.isPointerDown = false
     },
     onMouseMove (ev) {
       this.onPointerMove(ev.clientX, ev.clientY)
-      // console.log('onMouseMove', this.pointerPosX, this.pointerPosY)
+      // console.log('onMouseMove client, offset', ev.clientX, ev.clientY)
     },
     // Touch Events ------------------------------------------------------------
     onTouchStart (ev) {
@@ -157,7 +170,7 @@ export default {
         let distY = ev.touches[0].clientY - ev.touches[1].clientY
         this.twoFingerInitDist = Math.sqrt(distX * distX + distY * distY)
       }
-      // console.log('onTouchStart', ev.touches.length, this.pointerPosX, this.pointerPosY)
+      // console.log('onTouchStart', ev.touches)
     },
     onTouchEnd (ev) {
       if (ev.touches.length === 0) {
