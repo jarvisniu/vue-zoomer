@@ -4,7 +4,8 @@
   "description": "Zoom the image or other thing with mouse or touch",
   "main": "dist/vue-zoomer.js",
   "scripts": {
-    "dev": "parcel demo/index.html --port 5100",
+    "dev:basic": "parcel demo/basic/index.html --port 5100",
+    "dev:gallery": "parcel demo/gallery/index.html --port 5100",
     "clean": "rm -rf .cache && rm -rf dist",
     "build-only": "npm run clean && parcel build src/index.js --global VueZoomer --out-file vue-zoomer.js --no-source-maps",
     "build": "npm run clean && npm run build-only"
