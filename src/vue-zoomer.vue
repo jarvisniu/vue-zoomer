@@ -17,10 +17,13 @@
 </template>
 
 <script>
+import TapDetector from './TapDetector'
+
 export default {
   props: {
     minScale: { type: Number, default: 1 },
     maxScale: { type: Number, default: 5 },
+    zoomed: { type: Boolean, default: false },
   },
   data () {
     return {
@@ -34,19 +37,13 @@ export default {
       translateY: 0,
       scale: 1, // Relative to the container
       // Mouse states
-      isMouseDown: false,
-      mousePosX: -1,
-      mousePosY: -1,
+      isPointerDown: false,
+      pointerPosX: -1,
+      pointerPosY: -1,
       twoFingerInitDist: 0,
+      // Others
+      tapDetector: null,
     }
-  },
-  mounted () {
-    // console.log('container Width/Height: ', this.containerWidth, this.containerHeight)
-    window.addEventListener('resize', this.onResize)
-    this.onResize()
-  },
-  destroyed () {
-    window.removeEventListener('resize', this.onResize)
   },
   computed: {
     wrapperStyle () {
@@ -64,7 +61,62 @@ export default {
       }
     },
   },
+  watch: {
+    scale (val) {
+      this.$emit('update:zoomed', val !== 1)
+    },
+  },
+  mounted () {
+    this.tapDetector = new TapDetector()
+    this.tapDetector.attach(this.$el)
+    this.tapDetector.onDoubleTap(this.onDoubleTap)
+    // console.log('container size: ', this.containerWidth, this.containerHeight)
+    window.addEventListener('resize', this.onWindowResize)
+    this.onWindowResize()
+  },
+  destroyed () {
+    this.tapDetector.detach(this.$el)
+    window.removeEventListener('resize', this.onWindowResize)
+  },
   methods: {
+    // Main Logic --------------------------------------------------------------
+    // scale
+    tryToScale (scaleDelta) {
+      let normMousePosX = this.pointerPosX / this.containerWidth
+      let normMousePosY = this.pointerPosY / this.containerHeight
+      let newScale = this.scale * scaleDelta
+      if (newScale < this.minScale) newScale = this.minScale
+      else if (newScale > this.maxScale) newScale = this.maxScale
+      scaleDelta = newScale / this.scale
+      this.scale = newScale
+      this.translateX = (0.5 + this.translateX - normMousePosX) * scaleDelta + normMousePosX - 0.5
+      this.translateY = (0.5 + this.translateY - normMousePosY) * scaleDelta + normMousePosY - 0.5
+    },
+    // pan
+    onPointerMove (newMousePosX, newMousePosY) {
+      if (this.isPointerDown) {
+        let pixelDeltaX = newMousePosX - this.pointerPosX
+        let pixelDeltaY = newMousePosY - this.pointerPosY
+        // console.log('pixelDeltaX, pixelDeltaY', pixelDeltaX, pixelDeltaY)
+        this.translateX += pixelDeltaX / this.containerWidth
+        this.translateY += pixelDeltaY / this.containerHeight
+      }
+      this.pointerPosX = newMousePosX
+      this.pointerPosY = newMousePosY
+    },
+    // reset
+    onDoubleTap () {
+      this.scale = 1
+      this.translateX = 0
+      this.translateY = 0
+    },
+    // reactive
+    onWindowResize () {
+      let styles = window.getComputedStyle(this.$el)
+      this.containerWidth = parseFloat(styles.width)
+      this.containerHeight = parseFloat(styles.height)
+    },
+    // Mouse Events ------------------------------------------------------------
     // Mouse wheel scroll: Zoom the image with the point at the mouse pointer pinned.
     // Simplify: This can be regard as vector pointer to old-image-center scaling.
     // FIX TouchPad on Mac is much sensitive
@@ -74,80 +126,58 @@ export default {
       // console.log('onMouseWheel', ev.wheelDelta, scaleDelta)
       this.tryToScale(scaleDelta)
     },
-    tryToScale (scaleDelta) {
-      let normMousePosX = this.mousePosX / this.containerWidth
-      let normMousePosY = this.mousePosY / this.containerHeight
-      let newScale = this.scale * scaleDelta
-      if (newScale < this.minScale) newScale = this.minScale
-      else if (newScale > this.maxScale) newScale = this.maxScale
-      scaleDelta = newScale / this.scale
-      this.scale = newScale
-      this.translateX = (0.5 + this.translateX - normMousePosX) * scaleDelta + normMousePosX - 0.5
-      this.translateY = (0.5 + this.translateY - normMousePosY) * scaleDelta + normMousePosY - 0.5
-    },
     onMouseDown (ev) {
-      this.isMouseDown = true
+      this.isPointerDown = true
       // Open the context menu then click other place will skip the mousemove events.
-      // This will cause the mousePosX/Y NOT sync, then we will need to fix it on mousedown event.
-      this.mousePosX = ev.clientX
-      this.mousePosY = ev.clientY
+      // This will cause the pointerPosX/Y NOT sync, then we will need to fix it on mousedown event.
+      this.pointerPosX = ev.clientX
+      this.pointerPosY = ev.clientY
       // console.log('onMouseDown', ev.clientX, ev.clientY)
     },
     onMouseUp (ev) {
-      this.isMouseDown = false
+      this.isPointerDown = false
     },
     onMouseMove (ev) {
       this.onPointerMove(ev.clientX, ev.clientY)
-      // console.log('onMouseMove', this.mousePosX, this.mousePosY)
+      // console.log('onMouseMove', this.pointerPosX, this.pointerPosY)
     },
-    onPointerMove(newMousePosX, newMousePosY) {
-      if (this.isMouseDown) {
-        let pixelDeltaX = newMousePosX - this.mousePosX
-        let pixelDeltaY = newMousePosY - this.mousePosY
-        // console.log('pixelDeltaX, pixelDeltaY', pixelDeltaX, pixelDeltaY)
-        this.translateX += pixelDeltaX / this.containerWidth
-        this.translateY += pixelDeltaY / this.containerHeight
-      }
-      this.mousePosX = newMousePosX
-      this.mousePosY = newMousePosY
-    },
+    // Touch Events ------------------------------------------------------------
     onTouchStart (ev) {
       if (ev.touches.length === 1) {
-        this.mousePosX = ev.touches[0].clientX
-        this.mousePosY = ev.touches[0].clientY
-        this.isMouseDown = true
+        this.pointerPosX = ev.touches[0].clientX
+        this.pointerPosY = ev.touches[0].clientY
+        this.isPointerDown = true
       } else if (ev.touches.length === 2) {
-        this.isMouseDown = true
+        this.isPointerDown = true
         // pos
-        this.mousePosX = (ev.touches[0].clientX + ev.touches[1].clientX) / 2
-        this.mousePosY = (ev.touches[0].clientY + ev.touches[1].clientY) / 2
+        this.pointerPosX = (ev.touches[0].clientX + ev.touches[1].clientX) / 2
+        this.pointerPosY = (ev.touches[0].clientY + ev.touches[1].clientY) / 2
         // dist
         let distX = ev.touches[0].clientX - ev.touches[1].clientX
         let distY = ev.touches[0].clientY - ev.touches[1].clientY
         this.twoFingerInitDist = Math.sqrt(distX * distX + distY * distY)
       }
-      // console.log('onTouchStart', ev.touches.length, this.mousePosX, this.mousePosY)
+      // console.log('onTouchStart', ev.touches.length, this.pointerPosX, this.pointerPosY)
     },
     onTouchEnd (ev) {
       if (ev.touches.length === 0) {
-        this.isMouseDown = false
+        this.isPointerDown = false
       } else if (ev.touches.length === 1) {
-        this.mousePosX = ev.touches[0].clientX
-        this.mousePosY = ev.touches[0].clientY
+        this.pointerPosX = ev.touches[0].clientX
+        this.pointerPosY = ev.touches[0].clientY
       }
       // console.log('onTouchEnd', ev.touches.length)
     },
     onTouchMove (ev) {
       if (ev.touches.length === 1) {
-        let touch = ev.touches[0]
-        this.onPointerMove(touch.clientX, touch.clientY)
+        this.onPointerMove(ev.touches[0].clientX, ev.touches[0].clientY)
       } else if (ev.touches.length === 2) {
         // pos
         let newMousePosX = (ev.touches[0].clientX + ev.touches[1].clientX) / 2
         let newMousePosY = (ev.touches[0].clientY + ev.touches[1].clientY) / 2
         this.onPointerMove(newMousePosX, newMousePosY)
-        this.mousePosX = newMousePosX
-        this.mousePosY = newMousePosY
+        this.pointerPosX = newMousePosX
+        this.pointerPosY = newMousePosY
         // dist
         let distX = ev.touches[0].clientX - ev.touches[1].clientX
         let distY = ev.touches[0].clientY - ev.touches[1].clientY
@@ -155,12 +185,7 @@ export default {
         this.tryToScale(newTwoFingerDist / this.twoFingerInitDist)
         this.twoFingerInitDist = newTwoFingerDist
       }
-      // console.log('onTouchMove', this.mousePosX, this.mousePosY)
-    },
-    onResize () {
-      let styles = window.getComputedStyle(this.$el)
-      this.containerWidth = parseFloat(styles.width)
-      this.containerHeight = parseFloat(styles.height)
+      // console.log('onTouchMove', this.pointerPosX, this.pointerPosY)
     },
   },
 }

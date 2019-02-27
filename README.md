@@ -33,8 +33,12 @@ Use:
 
 # API: Props
 
+> `out` means the prop is a child -> parent one-way binding.
+> So it must be uses with a `.sync` modifier.
+
 - `maxScale: number` - Maximum scale limit, default is 1;
 - `minScale: number` - Minimum scale limit, default is 5;
+- `zoomed: out boolean` - Whether zoomed out (scale equals to 1);
 
 # License
 
