@@ -33,9 +33,10 @@ export default {
       containerHeight: 1,
       // Store values: Interactions will at last change these values.
       // After rotation or resize, these values will keep still.
+      // These three values are all relative to the container size.
       translateX: 0,
       translateY: 0,
-      scale: 1, // Relative to the container
+      scale: 1,
       // Mouse states
       lastFullWheelTime: 0,
       isPointerDown: false,
@@ -65,13 +66,13 @@ export default {
   },
   watch: {
     scale (val) {
-      this.$emit('update:zoomed', val !== 1)
+      if (val !== 1) this.$emit('update:zoomed', true)
     },
   },
   mounted () {
     this.tapDetector = new TapDetector()
     this.tapDetector.attach(this.$el)
-    this.tapDetector.onDoubleTap(this.onDoubleTap)
+    this.tapDetector.onDoubleTap(this.reset)
     // console.log('container size: ', this.containerWidth, this.containerHeight)
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
@@ -110,8 +111,30 @@ export default {
       this.pointerPosX = newMousePosX
       this.pointerPosY = newMousePosY
     },
+    onInteractionEnd () {
+      this.limit()
+      this.panLocked = this.scale === 1
+      this.$emit('update:zoomed', !this.panLocked)
+    },
+    // limit the scale between max and min and the translate within the viewport
+    limit () {
+      // scale
+      if (this.scale < this.minScale) {
+        this.scale = this.minScale
+      } else if (this.scale > this.maxScale) {
+        this.scale = this.maxScale
+      }
+      // translate
+      let translateLimit = (this.scale - 1) / 2
+      if (Math.abs(this.translateX) > translateLimit) {
+        this.translateX *= translateLimit / Math.abs(this.translateX)
+      }
+      if (Math.abs(this.translateY) > translateLimit) {
+        this.translateY *= translateLimit / Math.abs(this.translateY)
+      }
+    },
     // reset
-    onDoubleTap () {
+    reset () {
       this.scale = 1
       this.panLocked = true
       this.translateX = 0
@@ -142,7 +165,7 @@ export default {
       let scaleDelta = Math.pow(1.25, ev.wheelDelta / 120)
       // console.log('onMouseWheel', ev.wheelDelta, scaleDelta)
       this.tryToScale(scaleDelta)
-      this.panLocked = this.scale === 1
+      this.onInteractionEnd()
     },
     onMouseDown (ev) {
       this.isPointerDown = true
@@ -154,7 +177,7 @@ export default {
     },
     onMouseUp (ev) {
       this.isPointerDown = false
-      this.panLocked = this.scale === 1
+      this.onInteractionEnd()
     },
     onMouseMove (ev) {
       this.onPointerMove(ev.clientX, ev.clientY)
@@ -181,7 +204,7 @@ export default {
     onTouchEnd (ev) {
       if (ev.touches.length === 0) {
         this.isPointerDown = false
-        this.panLocked = this.scale === 1
+        this.onInteractionEnd()
       } else if (ev.touches.length === 1) {
         this.pointerPosX = ev.touches[0].clientX
         this.pointerPosY = ev.touches[0].clientY
