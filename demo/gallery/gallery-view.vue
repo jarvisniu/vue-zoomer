@@ -16,7 +16,7 @@
     @touchend="onTouchEnd"
     @touchmove.prevent="onTouchMove"
   >
-    <vue-zoomer
+    <v-zoomer
       v-for="(n, i) in 3"
       :key="i + selIndex"
       :class="['left', 'middle', 'right'][i]"
@@ -30,7 +30,7 @@
         :src="list[i - 1 + selIndex]"
         style="object-fit: contain; width: 100%; height: 100%;"
       >
-    </vue-zoomer>
+    </v-zoomer>
   </div>
 </template>
 

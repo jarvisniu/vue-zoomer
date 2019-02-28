@@ -2,7 +2,7 @@
 <template>
   <div
     class="vue-zoomer"
-    :style="{backgroundColor: `hsl(0, 0%, 0%, ${ scale === 1 ? 0.7 : 0.8 })`}"
+    :style="{backgroundColor: `hsl(0, 0%, 0%, ${ scale <= 1 ? 0.7 : 0.8 })`}"
     @mousewheel.prevent="onMouseWheel"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
@@ -56,7 +56,7 @@ export default {
     }
   },
   computed: {
-    wrapperStyle () {
+    wrapperStyleAbsolute () {
       let W = this.containerWidth
       let H = this.containerHeight
       let width = W * this.animScale
@@ -68,6 +68,16 @@ export default {
         top: `${ top }px`,
         width: `${ width }px`,
         height: `${ height }px`,
+      }
+    },
+    wrapperStyle () {
+      let translateX = this.containerWidth * this.animTranslateX
+      let translateY = this.containerHeight * this.animTranslateY
+      return {
+        transform: [
+          `translate(${ translateX }px, ${ translateY }px)`,
+          `scale(${ this.animScale })`,
+        ].join(' ')
       }
     },
   },
@@ -280,12 +290,15 @@ export default {
 
 <style lang="stylus" scoped>
 .vue-zoomer
-  position relative
+  // position relative
   overflow hidden
   transition background-color 0.5s
 
 .zoomer
-  position absolute
+  // position absolute
+  transform-origin 50% 50%
+  width 100%
+  height 100%
   & > img
     // remove the 4px gap below the image
     vertical-align top

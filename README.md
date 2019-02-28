@@ -23,12 +23,12 @@ Vue.use(VueZoomer)
 
 Use:
 ```html
-<vue-zoomer style="width: 500px; height: 500px; border: solid 1px silver;">
+<v-zoomer style="width: 500px; height: 500px; border: solid 1px silver;">
   <img
     src="./assets/landscape-1.jpg"
     style="object-fit: contain; width: 100%; height: 100%;"
   >
-</vue-zoomer>
+</v-zoomer>
 ```
 
 # API: Props
