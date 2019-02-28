@@ -2,6 +2,7 @@
 <template>
   <div
     class="vue-zoomer"
+    :style="{backgroundColor: `hsl(0, 0%, 0%, ${ scale === 1 ? 0.7 : 0.71 })`}"
     @mousewheel.prevent="onMouseWheel"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
@@ -72,7 +73,7 @@ export default {
   mounted () {
     this.tapDetector = new TapDetector()
     this.tapDetector.attach(this.$el)
-    this.tapDetector.onDoubleTap(this.reset)
+    this.tapDetector.onDoubleTap(this.onDoubleTap)
     // console.log('container size: ', this.containerWidth, this.containerHeight)
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
@@ -132,6 +133,14 @@ export default {
       if (Math.abs(this.translateY) > translateLimit) {
         this.translateY *= translateLimit / Math.abs(this.translateY)
       }
+    },
+    onDoubleTap () {
+      if (this.scale === 1) {
+        this.scale = Math.min(2, this.maxScale)
+      } else {
+        this.reset()
+      }
+      this.onInteractionEnd()
     },
     // reset
     reset () {
@@ -204,6 +213,8 @@ export default {
     onTouchEnd (ev) {
       if (ev.touches.length === 0) {
         this.isPointerDown = false
+        // Near 1 to set 1
+        if (Math.abs(this.scale - 1) < 0.1) this.scale = 1
         this.onInteractionEnd()
       } else if (ev.touches.length === 1) {
         this.pointerPosX = ev.touches[0].clientX
@@ -238,7 +249,6 @@ export default {
 .vue-zoomer
   position relative
   overflow hidden
-  background-color hsla(0, 0%, 0%, 0.5)
 
 .zoomer
   position absolute

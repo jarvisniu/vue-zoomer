@@ -3,7 +3,10 @@
     :style="{
       width: containerWidth + 'px',
       height: containerHeight + 'px',
-     }"
+    }"
+    :class="{
+      'anim': !disableAnim && !isPointerDown,
+    }"
     class="gallery-view"
     @mousemove="onMouseMove"
     @mousedown="onMouseDown"
@@ -13,49 +16,46 @@
     @touchend="onTouchEnd"
     @touchmove.prevent="onTouchMove"
   >
-    <!-- left -->
-    <img
-      class="left slide"
-      :class="{ touching: isPointerDown }"
-      :style="leftStyle"
-      src="../assets/landscape-2.jpg"
-    >
-    <!-- middle -->
     <vue-zoomer
-      class="middle slide"
-      :style="middleStyle"
-      :class="{ touching: isPointerDown }"
+      v-for="(n, i) in 3"
+      :key="i + selIndex"
+      :class="['left', 'middle', 'right'][i]"
+      class="slide"
+      :style="[leftStyle, middleStyle, rightStyle][i]"
       :max-scale="10"
-      :zoomed.sync="zoomed"
+      :zoomed.sync="currentZoomed"
     >
-      <img src="../assets/landscape-1.jpg" style="object-fit: contain; width: 100%; height: 100%;">
+      <img
+        v-if="i - 1 + selIndex > -1 && i - 1 + selIndex < list.length"
+        :src="list[i - 1 + selIndex]"
+        style="object-fit: contain; width: 100%; height: 100%;"
+      >
     </vue-zoomer>
-    <!-- right -->
-    <img
-      class="right slide"
-      :class="{ touching: isPointerDown }"
-      :style="rightStyle"
-      src="../assets/landscape-3.jpg"
-    >
   </div>
 </template>
 
 <script>
 
-const SLIDE_WIDTH_THRESH = 0.25
+const SLIDE_WIDTH_THRESH = 100 // in px
 
 export default {
   props: {
     value: { type: Number, required: true },
+    list: { type: Array, required: true },
   },
   data () {
     return {
-      slideOffsetX: 0,
-      isPointerDown: false,
-      lastPointerX: 0,
-      zoomed: false,
+      // env states
       containerWidth: 1,
       containerHeight: 1,
+      // main states
+      selIndex: this.value,
+      currentZoomed: false,
+      disableAnim: true,
+      // interaction states
+      isPointerDown: false,
+      lastPointerX: 0,
+      slideOffsetX: 0,
     }
   },
   computed: {
@@ -77,12 +77,16 @@ export default {
   },
   watch: {
     isPointerDown (val) {
-      if (!val) this.onPointerUp()
+
     },
   },
   mounted () {
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
+    // Stop the initial sliding animation of left and right image
+    setTimeout(() => {
+      this.disableAnim = false
+    }, 10)
   },
   destroyed () {
     window.removeEventListener('resize', this.onWindowResize)
@@ -95,18 +99,35 @@ export default {
       this.containerHeight = parseFloat(styles.height)
     },
     onPointerMove (deltaX) {
-      if (this.isPointerDown && !this.zoomed) {
+      if (this.isPointerDown && !this.currentZoomed) {
         this.slideOffsetX += deltaX
       }
     },
     onPointerUp () {
-      if (this.slideOffsetX < -this.containerWidth * SLIDE_WIDTH_THRESH) {
-        this.slideOffsetX = -this.containerWidth
-      } else if (this.slideOffsetX < this.containerWidth * SLIDE_WIDTH_THRESH) {
+      if (this.slideOffsetX < -SLIDE_WIDTH_THRESH) {
+        // next page
+        this.paginate(1)
+      } else if (this.slideOffsetX < SLIDE_WIDTH_THRESH) {
         this.slideOffsetX = 0
       } else {
-        this.slideOffsetX = this.containerWidth
+        // prev page
+        this.paginate(-1)
       }
+    },
+    paginate (deltaIndex) {
+      let targetIndex = this.selIndex + deltaIndex
+      if (targetIndex < 0 || targetIndex >= this.list.length) {
+        this.slideOffsetX = 0
+        this.disableAnim = false
+        return
+      }
+      this.slideOffsetX = this.containerWidth * -deltaIndex
+      this.disableAnim = false
+      setTimeout(() => {
+        this.selIndex = targetIndex
+        this.slideOffsetX = 0
+        this.disableAnim = true
+      }, 500)
     },
     onMouseDown (ev) {
       this.isPointerDown = true
@@ -114,6 +135,7 @@ export default {
     },
     onMouseUp (ev) {
       this.isPointerDown = false
+      this.onPointerUp()
     },
     onMouseMove (ev) {
       if (this.isPointerDown) {
@@ -130,6 +152,7 @@ export default {
     onTouchEnd (ev) {
       if (ev.touches.length === 0) {
         this.isPointerDown = false
+        this.onPointerUp()
       }
     },
     onTouchMove (ev) {
@@ -145,7 +168,8 @@ export default {
 <style lang="stylus" scoped>
 .gallery-view
   position relative
-  border solid 1px red
+  background-color hsl(210, 50%, 85%)
+  // border solid 1px red
   overflow hidden
   user-select none
   & > *
@@ -159,6 +183,9 @@ export default {
   height 100%
   // border solid 1px silver
   -webkit-user-drag none
-  &:not(.touching)
+
+// Transition Animations
+.gallery-view.anim
+  .slide
     transition left 0.5s
 </style>
