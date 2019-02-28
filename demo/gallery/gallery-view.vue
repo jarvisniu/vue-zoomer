@@ -1,5 +1,9 @@
 <template>
   <div
+    :style="{
+      width: containerWidth + 'px',
+      height: containerHeight + 'px',
+     }"
     class="gallery-view"
     @mousemove="onMouseMove"
     @mousedown="onMouseDown"
@@ -37,48 +41,71 @@
 </template>
 
 <script>
+
+const SLIDE_WIDTH_THRESH = 0.25
+
 export default {
   props: {
     value: { type: Number, required: true },
   },
   data () {
     return {
-      offset: 0,
+      slideOffsetX: 0,
       isPointerDown: false,
       lastPointerX: 0,
       zoomed: false,
+      containerWidth: 1,
+      containerHeight: 1,
     }
   },
   computed: {
     middleStyle () {
       return {
-        left: `${ 0 + this.offset }px`,
+        left: `${ 0 + this.slideOffsetX }px`,
       }
     },
     leftStyle () {
       return {
-        left: `${ -500 + this.offset }px`,
+        left: `${ -this.containerWidth + this.slideOffsetX }px`,
       }
     },
     rightStyle () {
       return {
-        left: `${ 500 + this.offset }px`,
+        left: `${ this.containerWidth + this.slideOffsetX }px`,
       }
     },
   },
   watch: {
     isPointerDown (val) {
-      if (!val) {
-        if (this.offset < -250) this.offset = -500
-        else if (this.offset < 250) this.offset = 0
-        else this.offset = 500
-      }
+      if (!val) this.onPointerUp()
     },
   },
+  mounted () {
+    window.addEventListener('resize', this.onWindowResize)
+    this.onWindowResize()
+  },
+  destroyed () {
+    window.removeEventListener('resize', this.onWindowResize)
+  },
   methods: {
+    // reactive
+    onWindowResize () {
+      let styles = window.getComputedStyle(this.$el)
+      this.containerWidth = parseFloat(styles.width)
+      this.containerHeight = parseFloat(styles.height)
+    },
     onPointerMove (deltaX) {
       if (this.isPointerDown && !this.zoomed) {
-        this.offset += deltaX
+        this.slideOffsetX += deltaX
+      }
+    },
+    onPointerUp () {
+      if (this.slideOffsetX < -this.containerWidth * SLIDE_WIDTH_THRESH) {
+        this.slideOffsetX = -this.containerWidth
+      } else if (this.slideOffsetX < this.containerWidth * SLIDE_WIDTH_THRESH) {
+        this.slideOffsetX = 0
+      } else {
+        this.slideOffsetX = this.containerWidth
       }
     },
     onMouseDown (ev) {
@@ -119,8 +146,6 @@ export default {
 .gallery-view
   position relative
   border solid 1px red
-  width 500px
-  height 500px
   overflow hidden
   user-select none
   & > *
@@ -130,8 +155,8 @@ export default {
   position absolute
   top 0
   object-fit contain
-  width 500px
-  height 500px
+  width 100%
+  height 100%
   // border solid 1px silver
   -webkit-user-drag none
   &:not(.touching)

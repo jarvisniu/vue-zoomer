@@ -3,7 +3,7 @@
     <div>
       Gallery
     </div>
-    <gallery-view v-model="selIndex"></gallery-view>
+    <gallery-view style="width: 600px; height: 600px;" v-model="selIndex"></gallery-view>
   </div>
 </template>
 
