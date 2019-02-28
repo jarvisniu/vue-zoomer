@@ -2,7 +2,7 @@
 <template>
   <div
     class="vue-zoomer"
-    :style="{backgroundColor: `hsl(0, 0%, 0%, ${ scale === 1 ? 0.7 : 0.71 })`}"
+    :style="{backgroundColor: `hsl(0, 0%, 0%, ${ scale === 1 ? 0.7 : 0.8 })`}"
     @mousewheel.prevent="onMouseWheel"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import _debounce from 'lodash.debounce'
+
 import TapDetector from './TapDetector'
 
 export default {
@@ -36,8 +38,11 @@ export default {
       // After rotation or resize, these values will keep still.
       // These three values are all relative to the container size.
       translateX: 0,
+      animTranslateX: 0,
       translateY: 0,
+      animTranslateY: 0,
       scale: 1,
+      animScale: 1,
       // Mouse states
       lastFullWheelTime: 0,
       isPointerDown: false,
@@ -46,6 +51,7 @@ export default {
       twoFingerInitDist: 0,
       panLocked: true,
       // Others
+      raf: null,
       tapDetector: null,
     }
   },
@@ -53,10 +59,10 @@ export default {
     wrapperStyle () {
       let W = this.containerWidth
       let H = this.containerHeight
-      let width = W * this.scale
-      let height = H * this.scale
-      let left = W * this.translateX + W * (1 - this.scale) / 2
-      let top = H * this.translateY + H * (1 - this.scale) / 2
+      let width = W * this.animScale
+      let height = H * this.animScale
+      let left = W * this.animTranslateX + W * (1 - this.animScale) / 2
+      let top = H * this.animTranslateY + H * (1 - this.animScale) / 2
       return {
         left: `${ left }px`,
         top: `${ top }px`,
@@ -67,7 +73,10 @@ export default {
   },
   watch: {
     scale (val) {
-      if (val !== 1) this.$emit('update:zoomed', true)
+      if (val !== 1) {
+        this.$emit('update:zoomed', true)
+        this.panLocked = false
+      }
     },
   },
   mounted () {
@@ -77,10 +86,13 @@ export default {
     // console.log('container size: ', this.containerWidth, this.containerHeight)
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
+    this.loop()
   },
   destroyed () {
     this.tapDetector.detach(this.$el)
     window.removeEventListener('resize', this.onWindowResize)
+    window.cancelAnimationFrame(this.raf)
+    // console.log('destroy')
   },
   methods: {
     // Main Logic --------------------------------------------------------------
@@ -91,8 +103,13 @@ export default {
       let normMousePosX = this.pointerPosX / this.containerWidth
       let normMousePosY = this.pointerPosY / this.containerHeight
       let newScale = this.scale * scaleDelta
-      if (newScale < this.minScale) newScale = this.minScale
-      else if (newScale > this.maxScale) newScale = this.maxScale
+       // damping
+      if (newScale < this.minScale || newScale > this.maxScale) {
+        let log = Math.log2(scaleDelta)
+        log *= 0.2
+        scaleDelta = Math.pow(2, log)
+        newScale = this.scale * scaleDelta
+      }
       scaleDelta = newScale / this.scale
       this.scale = newScale
       this.translateX = (0.5 + this.translateX - normMousePosX) * scaleDelta + normMousePosX - 0.5
@@ -112,11 +129,11 @@ export default {
       this.pointerPosX = newMousePosX
       this.pointerPosY = newMousePosY
     },
-    onInteractionEnd () {
+    onInteractionEnd: _debounce(function ()  {
       this.limit()
       this.panLocked = this.scale === 1
       this.$emit('update:zoomed', !this.panLocked)
-    },
+    }, 100),
     // limit the scale between max and min and the translate within the viewport
     limit () {
       // scale
@@ -136,7 +153,7 @@ export default {
     },
     onDoubleTap () {
       if (this.scale === 1) {
-        this.scale = Math.min(2, this.maxScale)
+        this.scale = Math.min(3, this.maxScale)
       } else {
         this.reset()
       }
@@ -154,6 +171,22 @@ export default {
       let styles = window.getComputedStyle(this.$el)
       this.containerWidth = parseFloat(styles.width)
       this.containerHeight = parseFloat(styles.height)
+    },
+    loop () {
+      this.animScale = this.gainOn(this.animScale, this.scale)
+      this.animTranslateX = this.gainOn(this.animTranslateX, this.translateX)
+      this.animTranslateY = this.gainOn(this.animTranslateY, this.translateY)
+      this.raf = window.requestAnimationFrame(this.loop)
+      // console.log('loop', this.raf)
+    },
+    gainOn (from, to) {
+      let delta = (to - from) * 0.3
+      // console.log('gainOn', from, to, from + delta)
+      if (Math.abs(delta) > 1e-5) {
+        return from + delta
+      } else {
+        return to
+      }
     },
     // Mouse Events ------------------------------------------------------------
     // Mouse wheel scroll,  TrackPad pinch or TrackPad scroll
@@ -249,6 +282,7 @@ export default {
 .vue-zoomer
   position relative
   overflow hidden
+  transition background-color 0.5s
 
 .zoomer
   position absolute

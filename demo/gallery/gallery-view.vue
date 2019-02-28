@@ -36,7 +36,7 @@
 
 <script>
 
-const SLIDE_WIDTH_THRESH = 100 // in px
+const SLIDE_WIDTH_THRESH = 50 // in px
 
 export default {
   props: {
@@ -74,10 +74,8 @@ export default {
         left: `${ this.containerWidth + this.slideOffsetX }px`,
       }
     },
-  },
-  watch: {
-    isPointerDown (val) {
-
+    slideThresh () {
+      return Math.max(SLIDE_WIDTH_THRESH, this.containerWidth * 0.1)
     },
   },
   mounted () {
@@ -100,18 +98,24 @@ export default {
     },
     onPointerMove (deltaX) {
       if (this.isPointerDown && !this.currentZoomed) {
-        this.slideOffsetX += deltaX
+        let factor = 1
+        if (
+          (this.selIndex === 0 && deltaX > 0) ||
+          (this.selIndex === this.list.length - 1 && deltaX < 0)
+        ) factor = 0.3
+        this.slideOffsetX += deltaX * factor
       }
     },
     onPointerUp () {
-      if (this.slideOffsetX < -SLIDE_WIDTH_THRESH) {
+      if (this.slideOffsetX < -this.slideThresh) {
         // next page
         this.paginate(1)
-      } else if (this.slideOffsetX < SLIDE_WIDTH_THRESH) {
-        this.slideOffsetX = 0
-      } else {
+      } else if (this.slideOffsetX > this.slideThresh) {
         // prev page
         this.paginate(-1)
+      } else {
+        // only apply the animation
+        this.paginate(0)
       }
     },
     paginate (deltaIndex) {

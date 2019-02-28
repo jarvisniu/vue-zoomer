@@ -21,6 +21,7 @@
   "license": "MIT",
   "devDependencies": {
     "@vue/component-compiler-utils": "^2.6.0",
+    "lodash.debounce": "^4.0.8",
     "parcel-bundler": "^1.11.0",
     "stylus": "^0.54.5",
     "vue": "^2.6.7",
