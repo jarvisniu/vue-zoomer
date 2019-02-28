@@ -34,6 +34,8 @@ export default {
       // Need to reactive to window resizing.
       containerWidth: 1,
       containerHeight: 1,
+      containerLeft: 0,
+      containerTop: 0,
       // Store values: Interactions will at last change these values.
       // After rotation or resize, these values will keep still.
       // These three values are all relative to the container size.
@@ -56,20 +58,6 @@ export default {
     }
   },
   computed: {
-    wrapperStyleAbsolute () {
-      let W = this.containerWidth
-      let H = this.containerHeight
-      let width = W * this.animScale
-      let height = H * this.animScale
-      let left = W * this.animTranslateX + W * (1 - this.animScale) / 2
-      let top = H * this.animTranslateY + H * (1 - this.animScale) / 2
-      return {
-        left: `${ left }px`,
-        top: `${ top }px`,
-        width: `${ width }px`,
-        height: `${ height }px`,
-      }
-    },
     wrapperStyle () {
       let translateX = this.containerWidth * this.animTranslateX
       let translateY = this.containerHeight * this.animTranslateY
@@ -110,8 +98,8 @@ export default {
     // Zoom the image with the point at the pointer(mouse or pintch center) pinned.
     // Simplify: This can be regard as vector pointer to old-image-center scaling.
     tryToScale (scaleDelta) {
-      let normMousePosX = this.pointerPosX / this.containerWidth
-      let normMousePosY = this.pointerPosY / this.containerHeight
+      let normMousePosX = (this.pointerPosX - this.containerLeft) / this.containerWidth
+      let normMousePosY = (this.pointerPosY - this.containerTop) / this.containerHeight
       let newScale = this.scale * scaleDelta
        // damping
       if (newScale < this.minScale || newScale > this.maxScale) {
@@ -148,9 +136,11 @@ export default {
     limit () {
       // scale
       if (this.scale < this.minScale) {
-        this.scale = this.minScale
+        this.tryToScale(this.minScale / this.scale)
+        return
       } else if (this.scale > this.maxScale) {
-        this.scale = this.maxScale
+        this.tryToScale(this.maxScale / this.scale)
+        return
       }
       // translate
       let translateLimit = (this.scale - 1) / 2
@@ -181,6 +171,10 @@ export default {
       let styles = window.getComputedStyle(this.$el)
       this.containerWidth = parseFloat(styles.width)
       this.containerHeight = parseFloat(styles.height)
+    },
+    refreshContainerPos () {
+      this.containerLeft = +this.$el.offsetLeft || 0
+      this.containerTop = +this.$el.offsetTop || 0
     },
     loop () {
       this.animScale = this.gainOn(this.animScale, this.scale)
@@ -220,6 +214,7 @@ export default {
       this.onInteractionEnd()
     },
     onMouseDown (ev) {
+      this.refreshContainerPos()
       this.isPointerDown = true
       // Open the context menu then click other place will skip the mousemove events.
       // This will cause the pointerPosX/Y NOT sync, then we will need to fix it on mousedown event.
@@ -238,6 +233,7 @@ export default {
     // Touch Events ------------------------------------------------------------
     onTouchStart (ev) {
       if (ev.touches.length === 1) {
+        this.refreshContainerPos()
         this.pointerPosX = ev.touches[0].clientX
         this.pointerPosY = ev.touches[0].clientY
         this.isPointerDown = true

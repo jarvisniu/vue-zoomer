@@ -7,7 +7,7 @@
     :class="{
       'anim': !disableAnim && !isPointerDown,
     }"
-    class="gallery-view"
+    class="vue-zoomer-gallery"
     @mousemove="onMouseMove"
     @mousedown="onMouseDown"
     @mouseout="isPointerDown = false"
@@ -170,7 +170,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.gallery-view
+.vue-zoomer-gallery
   position relative
   background-color hsl(210, 50%, 85%)
   // border solid 1px red
@@ -189,7 +189,7 @@ export default {
   -webkit-user-drag none
 
 // Transition Animations
-.gallery-view.anim
+.vue-zoomer-gallery.anim
   .slide
     transition left 0.5s
 </style>
