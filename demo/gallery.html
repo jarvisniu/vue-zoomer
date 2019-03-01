@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Gallery - Vue Zoomer Demo</title>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="../dist/vue-zoomer.js"></script>
+  <link rel="stylesheet" href="../dist/vue-zoomer.css">
+</head>
+<body style="margin: 0;">
+
+  <div id="app">
+    <v-zoomer-gallery
+      style="width: 100vw; height: 100vh;"
+      :list="urlImageList"
+      v-model="selIndex"
+    ></v-zoomer-gallery>
+  </div>
+
+  <script>
+    Vue.use(VueZoomer.default)
+
+    new Vue({
+      el: '#app',
+      data () {
+        return {
+          selIndex: 0,
+          urlImageList: [
+            './assets/landscape-1.jpg',
+            './assets/landscape-2.jpg',
+            './assets/landscape-3.jpg',
+            './assets/landscape-4.jpg',
+            './assets/landscape-5.jpg',
+          ],
+        }
+      },
+    })
+  </script>
+</body>
+</html>
