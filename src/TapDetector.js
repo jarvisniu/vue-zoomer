@@ -18,9 +18,9 @@ function TapDetector () {
   let singleTapCallbacks = []
   let doubleTapCallbacks = []
 
-  function triggerCallbacks (cbList) {
+  function triggerCallbacks (cbList, arg) {
     cbList.forEach(cbItem => {
-      cbItem.apply()
+      cbItem.call(null, arg)
     })
   }
 
@@ -116,9 +116,15 @@ function TapDetector () {
       }
       lastTapTimestamp = Date.now()
       // console.log('tappedCount', tappedCount)
-      triggerCallbacks(singleTapCallbacks)
+      triggerCallbacks(singleTapCallbacks, {
+        clientX: lastPointerX,
+        clientY: lastPointerY,
+      })
       if (tappedCount === 2) {
-        triggerCallbacks(doubleTapCallbacks)
+        triggerCallbacks(doubleTapCallbacks, {
+          clientX: lastPointerX,
+          clientY: lastPointerY,
+        })
         tappedCount = 0 // clear count on maximum tap count
       }
     }

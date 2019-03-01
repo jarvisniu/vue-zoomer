@@ -136,11 +136,9 @@ export default {
     limit () {
       // scale
       if (this.scale < this.minScale) {
-        this.tryToScale(this.minScale / this.scale)
-        return
+        this.scale = this.minScale
       } else if (this.scale > this.maxScale) {
-        this.tryToScale(this.maxScale / this.scale)
-        return
+        this.scale = this.maxScale
       }
       // translate
       let translateLimit = (this.scale - 1) / 2
@@ -151,9 +149,13 @@ export default {
         this.translateY *= translateLimit / Math.abs(this.translateY)
       }
     },
-    onDoubleTap () {
+    onDoubleTap (ev) {
       if (this.scale === 1) {
-        this.scale = Math.min(3, this.maxScale)
+        if (ev.clientX > 0) {
+          this.pointerPosX = ev.clientX
+          this.pointerPosY = ev.clientY
+        }
+        this.tryToScale(Math.min(3, this.maxScale))
       } else {
         this.reset()
       }
