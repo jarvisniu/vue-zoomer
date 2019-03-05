@@ -1,6 +1,6 @@
 {
   "name": "vue-zoomer",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Zoom the image or other thing with mouse or touch",
   "main": "dist/vue-zoomer.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "dev:gallery": "parcel demo/gallery/index.html --port 5100",
     "clean": "rm -rf .cache && rm -rf dist",
     "build-only": "npm run clean && parcel build src/index.js --global VueZoomer --out-file vue-zoomer.js --no-source-maps",
-    "build": "npm run clean && npm run build-only"
+    "build": "npm run clean && npm run build-only",
+    "publish": "npm run build && npm publish"
   },
   "keywords": [
     "zoom",

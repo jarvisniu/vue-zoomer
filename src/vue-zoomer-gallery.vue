@@ -90,10 +90,6 @@ export default {
   mounted () {
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
-    // Stop the initial sliding animation of left and right image
-    setTimeout(() => {
-      this.disableAnim = false
-    }, 10)
   },
   destroyed () {
     window.removeEventListener('resize', this.onWindowResize)
@@ -131,9 +127,9 @@ export default {
       let targetIndex = this.selIndex + deltaIndex
       if (targetIndex < 0 || targetIndex >= this.list.length) {
         this.slideOffsetX = 0
-        this.disableAnim = false
         return
       }
+
       this.slideOffsetX = this.containerWidth * -deltaIndex
       this.disableAnim = false
       setTimeout(() => {

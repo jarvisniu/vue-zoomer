@@ -1,10 +1,20 @@
 <template>
   <div style="padding: 0px;">
     <v-zoomer-gallery
-      style="width: 100vw; height: 100vh;"
+      style="width: 100vw; height: calc(100vh - 29px);"
       :list="urlImageList"
       v-model="selIndex"
     ></v-zoomer-gallery>
+    <div style="padding: 4px;">
+      <button
+        :disabled="selIndex === 0"
+        @click="selIndex -= 1"
+      >&lt;-</button>
+      <button
+        :disabled="selIndex === urlImageList.length - 1"
+        @click="selIndex += 1"
+      >-&gt;</button>
+    </div>
   </div>
 </template>
 
