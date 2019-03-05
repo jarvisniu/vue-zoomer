@@ -1,4 +1,5 @@
 <template>
+  <!-- touchmove.prevent is used to stop the page scroll elastic effects -->
   <div
     :style="{
       width: containerWidth + 'px',
@@ -78,6 +79,14 @@ export default {
       return Math.max(SLIDE_WIDTH_THRESH, this.containerWidth * 0.1)
     },
   },
+  watch: {
+    value (val) {
+      this.selIndex = val
+    },
+    selIndex (val) {
+      this.$emit('input', val)
+    },
+  },
   mounted () {
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
@@ -100,8 +109,8 @@ export default {
       if (this.isPointerDown && !this.currentZoomed) {
         let factor = 1
         if (
-          (this.selIndex === 0 && deltaX > 0) ||
-          (this.selIndex === this.list.length - 1 && deltaX < 0)
+          (this.selIndex === 0 && deltaX > 0 && this.slideOffsetX + deltaX > 0) ||
+          (this.selIndex === this.list.length - 1 && deltaX < 0 && this.slideOffsetX + deltaX < 0)
         ) factor = 0.3
         this.slideOffsetX += deltaX * factor
       }

@@ -59,6 +59,9 @@ function TapDetector () {
 
   // Main logic ----------------------------------------------------------------
 
+  // in touch mode mouse events will be disabled. Otherwise touches will
+  // trigger both touchend end mouseup, i.e. one touch triggers two onPointerUp.
+  let isTouchMode = false
   let lastTapTimestamp = 0
   let tappedCount = 0
   let touchMovedLength = 0
@@ -66,6 +69,7 @@ function TapDetector () {
   let lastPointerY = 0
 
   function onTouchStart (ev) {
+    isTouchMode = true
     // console.log('onTouchStart')
     if (ev.touches.length === 1) {
       onPointerDown(ev.touches[0].clientX, ev.touches[0].clientY)
@@ -85,14 +89,20 @@ function TapDetector () {
   }
 
   function onMouseDown (ev) {
+    if (isTouchMode) return
+
     // console.log('onMouseDown')
     onPointerDown(ev.clientX, ev.clientY)
   }
   function onMouseUp (ev) {
+    if (isTouchMode) return
+
     // console.log('onMouseUp')
     onPointerUp()
   }
   function onMouseMove (ev) {
+    if (isTouchMode) return
+
     // console.log('onMouseMove', ev)
     if (ev.button === 0) {
       onPointerMove(ev.clientX, ev.clientY)

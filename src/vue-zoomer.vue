@@ -1,5 +1,6 @@
 <!-- vue-zoomer: https://github.com/jarvisniu/vue-zoomer -->
 <template>
+  <!-- mousewheel.prevent is used to stop the page scroll elastic effects -->
   <div
     class="vue-zoomer"
     :style="{backgroundColor: `hsl(0, 0%, 0%, ${ scale <= 1 ? 0.7 : 0.8 })`}"
@@ -7,7 +8,7 @@
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
     @mousemove="onMouseMove"
-    @touchstart.prevent="onTouchStart"
+    @touchstart="onTouchStart"
     @touchend="onTouchEnd"
     @touchmove="onTouchMove"
   >
