@@ -10,6 +10,7 @@
         :disabled="selIndex === 0"
         @click="selIndex -= 1"
       >&lt;-</button>
+      <span>{{ selIndex + 1 }} / {{ urlImageList.length }}</span>
       <button
         :disabled="selIndex === urlImageList.length - 1"
         @click="selIndex += 1"

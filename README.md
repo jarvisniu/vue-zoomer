@@ -4,8 +4,8 @@ Zoom the image or other thing with mouse or touch
 
 # Demo
 
-[Single Image](https://unpkg.com/vue-zoomer/demo/basic.html)
-[Gallery](https://unpkg.com/vue-zoomer/demo/gallery.html)
+- [Single Image](https://unpkg.com/vue-zoomer/demo/basic.html)
+- [Gallery](https://unpkg.com/vue-zoomer/demo/gallery.html)
 
 # Usage
 

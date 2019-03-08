@@ -25,6 +25,7 @@
       :style="[leftStyle, middleStyle, rightStyle][i]"
       :max-scale="10"
       :zoomed.sync="currentZoomed"
+      :reset-trigger="i"
     >
       <img
         v-if="i - 1 + selIndex > -1 && i - 1 + selIndex < list.length"
@@ -51,6 +52,7 @@ export default {
       containerHeight: 1,
       // main states
       selIndex: this.value,
+      animSelIndex: this.value,
       currentZoomed: false,
       disableAnim: true,
       // interaction states
@@ -81,10 +83,10 @@ export default {
   },
   watch: {
     value (val) {
-      this.selIndex = val
-    },
-    selIndex (val) {
-      this.$emit('input', val)
+      if (val !== this.animSelIndex) {
+        this.selIndex = val
+        this.animSelIndex = val
+      }
     },
   },
   mounted () {
@@ -132,6 +134,9 @@ export default {
 
       this.slideOffsetX = this.containerWidth * -deltaIndex
       this.disableAnim = false
+      // update the selIndex before the animation to remove the delay feeling
+      this.$emit('input', targetIndex)
+      this.animSelIndex = targetIndex
       setTimeout(() => {
         this.selIndex = targetIndex
         this.slideOffsetX = 0

@@ -28,6 +28,7 @@ export default {
     minScale: { type: Number, default: 1 },
     maxScale: { type: Number, default: 5 },
     zoomed: { type: Boolean, default: false },
+    resetTrigger: { type: Number, default: 1e5 },
   },
   data () {
     return {
@@ -77,6 +78,11 @@ export default {
         this.panLocked = false
       }
     },
+    resetTrigger (val) {
+      this.scale = 1
+      this.translateX = 0
+      this.translateY = 0
+    }
   },
   mounted () {
     this.tapDetector = new TapDetector()
