@@ -1,10 +1,6 @@
 <template>
   <!-- touchmove.prevent is used to stop the page scroll elastic effects -->
   <div
-    :style="{
-      width: containerWidth + 'px',
-      height: containerHeight + 'px',
-    }"
     :class="{
       'anim': !disableAnim && !isPointerDown,
     }"
@@ -186,6 +182,8 @@ export default {
   // border solid 1px red
   overflow hidden
   user-select none
+  min-width 100px
+  min-height 100px
   & > *
     display inline-block
 
