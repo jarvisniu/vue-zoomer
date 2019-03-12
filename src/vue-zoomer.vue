@@ -3,7 +3,7 @@
   <!-- mousewheel.prevent is used to stop the page scroll elastic effects -->
   <div
     class="vue-zoomer"
-    :style="{backgroundColor: `hsl(0, 0%, 0%, ${ scale <= 1 ? 0.7 : 0.8 })`}"
+    :style="{backgroundColor: backgroundColor}"
     @mousewheel.prevent="onMouseWheel"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
@@ -29,6 +29,8 @@ export default {
     maxScale: { type: Number, default: 5 },
     zoomed: { type: Boolean, default: false },
     resetTrigger: { type: Number, default: 1e5 },
+    aspectRatio: { type: Number, default: 1 },
+    backgroundColor: { type: String, default: 'transparent' },
   },
   data () {
     return {
@@ -78,11 +80,7 @@ export default {
         this.panLocked = false
       }
     },
-    resetTrigger (val) {
-      this.scale = 1
-      this.translateX = 0
-      this.translateY = 0
-    }
+    resetTrigger: 'reset',
   },
   mounted () {
     this.tapDetector = new TapDetector()
@@ -144,17 +142,42 @@ export default {
       // scale
       if (this.scale < this.minScale) {
         this.scale = this.minScale
+        // FIXME this sometimes will not reset when pinching in
+        // this.tryToScale(this.minScale / this.scale)
       } else if (this.scale > this.maxScale) {
-        this.scale = this.maxScale
+        this.tryToScale(this.maxScale / this.scale)
       }
       // translate
-      let translateLimit = (this.scale - 1) / 2
-      if (Math.abs(this.translateX) > translateLimit) {
-        this.translateX *= translateLimit / Math.abs(this.translateX)
+      let translateLimit = this.calcTranslateLimit()
+      if (Math.abs(this.translateX) > translateLimit.x) {
+        this.translateX *= translateLimit.x / Math.abs(this.translateX)
       }
-      if (Math.abs(this.translateY) > translateLimit) {
-        this.translateY *= translateLimit / Math.abs(this.translateY)
+      if (Math.abs(this.translateY) > translateLimit.y) {
+        this.translateY *= translateLimit.y / Math.abs(this.translateY)
       }
+    },
+    calcTranslateLimit () {
+      if (this.getMarginDirection() === 'y') {
+        let imageToContainerRatio = this.containerWidth / this.aspectRatio / this.containerHeight
+        let translateLimitY = (this.scale * imageToContainerRatio - 1) / 2
+        if (translateLimitY < 0) translateLimitY = 0
+        return {
+          x: (this.scale - 1) / 2,
+          y: translateLimitY,
+        }
+      } else {
+        let imageToContainerRatio = this.containerHeight * this.aspectRatio / this.containerWidth
+        let translateLimitX = (this.scale * imageToContainerRatio - 1) / 2
+        if (translateLimitX < 0) translateLimitX = 0
+        return {
+          x: translateLimitX,
+          y: (this.scale - 1) / 2,
+        }
+      }
+    },
+    getMarginDirection () {
+      let containerRatio = this.containerWidth / this.containerHeight
+      return containerRatio > this.aspectRatio ? 'x' : 'y'
     },
     onDoubleTap (ev) {
       if (this.scale === 1) {

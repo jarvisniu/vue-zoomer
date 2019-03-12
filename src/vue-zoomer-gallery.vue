@@ -2,7 +2,10 @@
   <!-- touchmove.prevent is used to stop the page scroll elastic effects -->
   <div
     :class="{
-      'anim': !disableAnim && !isPointerDown,
+      'anim': autoSliding && !isPointerDown,
+    }"
+    :style="{
+      'background-color': backgroundColor,
     }"
     class="vue-zoomer-gallery"
     @mousemove="onMouseMove"
@@ -22,11 +25,13 @@
       :max-scale="10"
       :zoomed.sync="currentZoomed"
       :reset-trigger="i"
+      :aspect-ratio="imageAspectRatios[selIndex + i - 1] || 1"
     >
       <img
-        v-if="i - 1 + selIndex > -1 && i - 1 + selIndex < list.length"
-        :src="list[i - 1 + selIndex]"
+        v-if="selIndex + i - 1 > -1 && selIndex + i - 1 < list.length"
+        :src="list[selIndex + i - 1]"
         style="object-fit: contain; width: 100%; height: 100%;"
+        @load="onImageLoad(selIndex + i - 1, $event)"
       >
     </v-zoomer>
   </div>
@@ -40,6 +45,7 @@ export default {
   props: {
     value: { type: Number, required: true },
     list: { type: Array, required: true },
+    backgroundColor: { type: String, default: '#333' },
   },
   data () {
     return {
@@ -50,7 +56,8 @@ export default {
       selIndex: this.value,
       animSelIndex: this.value,
       currentZoomed: false,
-      disableAnim: true,
+      autoSliding: false,
+      imageAspectRatios: [], // aspect ratio (width / height) of images
       // interaction states
       isPointerDown: false,
       lastPointerX: 0,
@@ -101,11 +108,10 @@ export default {
     },
     onPointerMove (deltaX) {
       if (this.isPointerDown && !this.currentZoomed) {
-        let factor = 1
-        if (
+        let factor = (
           (this.selIndex === 0 && deltaX > 0 && this.slideOffsetX + deltaX > 0) ||
           (this.selIndex === this.list.length - 1 && deltaX < 0 && this.slideOffsetX + deltaX < 0)
-        ) factor = 0.3
+        ) ? 0.3 : 1
         this.slideOffsetX += deltaX * factor
       }
     },
@@ -129,15 +135,15 @@ export default {
       }
 
       this.slideOffsetX = this.containerWidth * -deltaIndex
-      this.disableAnim = false
+      this.autoSliding = true
       // update the selIndex before the animation to remove the delay feeling
       this.$emit('input', targetIndex)
       this.animSelIndex = targetIndex
       setTimeout(() => {
         this.selIndex = targetIndex
         this.slideOffsetX = 0
-        this.disableAnim = true
-      }, 500)
+        this.autoSliding = false
+      }, 400)
     },
     onMouseDown (ev) {
       this.isPointerDown = true
@@ -171,6 +177,10 @@ export default {
         this.lastPointerX = ev.touches[0].clientX
       }
     },
+    onImageLoad (index, ev) {
+      let aspectRatio = ev.target.naturalWidth / ev.target.naturalHeight
+      this.$set(this.imageAspectRatios, index, aspectRatio)
+    },
   },
 }
 </script>
@@ -178,7 +188,6 @@ export default {
 <style lang="stylus" scoped>
 .vue-zoomer-gallery
   position relative
-  background-color hsl(210, 50%, 85%)
   // border solid 1px red
   overflow hidden
   user-select none
@@ -186,6 +195,11 @@ export default {
   min-height 100px
   & > *
     display inline-block
+
+  // Transition Animations
+  &.anim
+    .slide
+      transition left 0.4s
 
 .slide
   position absolute
@@ -195,9 +209,4 @@ export default {
   height 100%
   // border solid 1px silver
   -webkit-user-drag none
-
-// Transition Animations
-.vue-zoomer-gallery.anim
-  .slide
-    transition left 0.5s
 </style>
