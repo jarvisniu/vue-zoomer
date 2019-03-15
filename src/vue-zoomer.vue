@@ -203,6 +203,7 @@ export default {
       let styles = window.getComputedStyle(this.$el)
       this.containerWidth = parseFloat(styles.width)
       this.containerHeight = parseFloat(styles.height)
+      this.limit()
     },
     refreshContainerPos () {
       this.containerLeft = +this.$el.offsetLeft || 0
