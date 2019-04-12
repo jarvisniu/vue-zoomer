@@ -1,11 +1,13 @@
 <template>
   <div style="padding: 0px;">
     <v-zoomer-gallery
-      style="width: 100vw; height: calc(100vh - 29px);"
+      ref="gallery"
+      style="width: 100vw; height: calc(100vh - 32px);"
       :list="urlImageList"
       v-model="selIndex"
     ></v-zoomer-gallery>
-    <div style="padding: 4px;">
+    <div style="box-sizing: border-box; height: 32px; padding: 4px;">
+      <button @click="$refs.gallery.reset()">reset</button>
       <button
         :disabled="selIndex === 0"
         @click="selIndex -= 1"

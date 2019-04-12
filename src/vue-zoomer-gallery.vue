@@ -18,6 +18,7 @@
   >
     <v-zoomer
       v-for="(n, i) in 3"
+      ref="zoomers"
       :key="i + selIndex"
       :class="['left', 'middle', 'right'][i]"
       class="slide"
@@ -100,6 +101,12 @@ export default {
     window.removeEventListener('resize', this.onWindowResize)
   },
   methods: {
+    // api
+    reset () {
+      this.$refs.zoomers.forEach(zoomer => {
+        zoomer.reset()
+      })
+    },
     // reactive
     onWindowResize () {
       let styles = window.getComputedStyle(this.$el)
