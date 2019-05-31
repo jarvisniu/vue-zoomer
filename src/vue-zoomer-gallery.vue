@@ -27,6 +27,7 @@
       :zoomed.sync="currentZoomed"
       :reset-trigger="i"
       :aspect-ratio="imageAspectRatios[selIndex + i - 1] || 1"
+      :no-translate-limit="noTranslateLimit"
     >
       <img
         v-if="selIndex + i - 1 > -1 && selIndex + i - 1 < list.length"
@@ -47,6 +48,7 @@ export default {
     value: { type: Number, required: true },
     list: { type: Array, required: true },
     backgroundColor: { type: String, default: '#333' },
+    noTranslateLimit: { type: Boolean, default: false },
   },
   data () {
     return {

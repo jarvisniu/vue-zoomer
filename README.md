@@ -51,11 +51,13 @@ Gallery usage:
 - `maxScale: number` - Maximum scale limit, default is 1;
 - `minScale: number` - Minimum scale limit, default is 5;
 - `zoomed: out boolean` - Whether zoomed in (scale equals to 1);
+- `noTranslateLimit: boolean` - Whether to remove the translate limit (i.e. the margin when zoomed in), default is false;
 
 ## &lt;v-zoomer-gallery&gt; Props
 
 - `list: Array<string> required` - Displaying image urls;
 - `v-model(value): number required` - Index of current showing image;
+- `noTranslateLimit: boolean` - Whether to remove the translate limit (i.e. the margin when zoomed in), default is false;
 
 # License
 

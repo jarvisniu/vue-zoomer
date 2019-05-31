@@ -31,6 +31,7 @@ export default {
     resetTrigger: { type: Number, default: 1e5 },
     aspectRatio: { type: Number, default: 1 },
     backgroundColor: { type: String, default: 'transparent' },
+    noTranslateLimit: { type: Boolean, default: false },
   },
   data () {
     return {
@@ -148,12 +149,14 @@ export default {
         this.tryToScale(this.maxScale / this.scale)
       }
       // translate
-      let translateLimit = this.calcTranslateLimit()
-      if (Math.abs(this.translateX) > translateLimit.x) {
-        this.translateX *= translateLimit.x / Math.abs(this.translateX)
-      }
-      if (Math.abs(this.translateY) > translateLimit.y) {
-        this.translateY *= translateLimit.y / Math.abs(this.translateY)
+      if (!this.noTranslateLimit) {
+        let translateLimit = this.calcTranslateLimit()
+        if (Math.abs(this.translateX) > translateLimit.x) {
+          this.translateX *= translateLimit.x / Math.abs(this.translateX)
+        }
+        if (Math.abs(this.translateY) > translateLimit.y) {
+          this.translateY *= translateLimit.y / Math.abs(this.translateY)
+        }
       }
     },
     calcTranslateLimit () {
