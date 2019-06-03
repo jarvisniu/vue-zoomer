@@ -31,7 +31,8 @@ export default {
     resetTrigger: { type: Number, default: 1e5 },
     aspectRatio: { type: Number, default: 1 },
     backgroundColor: { type: String, default: 'transparent' },
-    noTranslateLimit: { type: Boolean, default: false },
+    pivot: { type: String, default: 'cursor' }, // other options: image-center
+    limitTranslation: { type: Boolean, default: true },
   },
   data () {
     return {
@@ -104,8 +105,6 @@ export default {
     // Zoom the image with the point at the pointer(mouse or pintch center) pinned.
     // Simplify: This can be regard as vector pointer to old-image-center scaling.
     tryToScale (scaleDelta) {
-      let normMousePosX = (this.pointerPosX - this.containerLeft) / this.containerWidth
-      let normMousePosY = (this.pointerPosY - this.containerTop) / this.containerHeight
       let newScale = this.scale * scaleDelta
        // damping
       if (newScale < this.minScale || newScale > this.maxScale) {
@@ -116,8 +115,12 @@ export default {
       }
       scaleDelta = newScale / this.scale
       this.scale = newScale
-      this.translateX = (0.5 + this.translateX - normMousePosX) * scaleDelta + normMousePosX - 0.5
-      this.translateY = (0.5 + this.translateY - normMousePosY) * scaleDelta + normMousePosY - 0.5
+      if (this.pivot !== 'image-center') {
+        let normMousePosX = (this.pointerPosX - this.containerLeft) / this.containerWidth
+        let normMousePosY = (this.pointerPosY - this.containerTop) / this.containerHeight
+        this.translateX = (0.5 + this.translateX - normMousePosX) * scaleDelta + normMousePosX - 0.5
+        this.translateY = (0.5 + this.translateY - normMousePosY) * scaleDelta + normMousePosY - 0.5
+      }
     },
     // pan
     onPointerMove (newMousePosX, newMousePosY) {
@@ -149,7 +152,7 @@ export default {
         this.tryToScale(this.maxScale / this.scale)
       }
       // translate
-      if (!this.noTranslateLimit) {
+      if (this.limitTranslation) {
         let translateLimit = this.calcTranslateLimit()
         if (Math.abs(this.translateX) > translateLimit.x) {
           this.translateX *= translateLimit.x / Math.abs(this.translateX)
