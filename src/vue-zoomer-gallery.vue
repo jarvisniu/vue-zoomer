@@ -10,7 +10,7 @@
     class="vue-zoomer-gallery"
     @mousemove="onMouseMove"
     @mousedown="onMouseDown"
-    @mouseout="isPointerDown = false"
+    @mouseout="onMouseUp"
     @mouseup="onMouseUp"
     @touchstart="onTouchStart"
     @touchend="onTouchEnd"
@@ -29,6 +29,7 @@
       :aspect-ratio="imageAspectRatios[selIndex + i - 1] || 1"
       :pivot="pivot"
       :limit-translation="limitTranslation"
+      @swipe="onImageSwipe"
     >
       <img
         v-if="selIndex + i - 1 > -1 && selIndex + i - 1 < list.length"
@@ -191,6 +192,9 @@ export default {
     onImageLoad (index, ev) {
       let aspectRatio = ev.target.naturalWidth / ev.target.naturalHeight
       this.$set(this.imageAspectRatios, index, aspectRatio)
+    },
+    onImageSwipe (direction) {
+      this.paginate(direction == 'right' ? -1 : 1)
     },
   },
 }

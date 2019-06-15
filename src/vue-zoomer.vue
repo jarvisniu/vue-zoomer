@@ -53,6 +53,8 @@ export default {
       animScale: 1,
       // Mouse states
       lastFullWheelTime: 0,
+      lastWheelTime: 0,
+      lastWheelDirection: 'x',
       isPointerDown: false,
       pointerPosX: -1,
       pointerPosY: -1,
@@ -234,16 +236,25 @@ export default {
     // Mouse Events ------------------------------------------------------------
     // Mouse wheel scroll,  TrackPad pinch or TrackPad scroll
     onMouseWheel (ev) {
+      let currTime = Date.now()
       if (Math.abs(ev.wheelDelta) === 120) {
         // Throttle the TouchPad pinch on Mac, or it will be too sensitive
-        let currTime = Date.now()
         if (currTime - this.lastFullWheelTime > 50) {
           this.onMouseWheelDo(ev)
           this.lastFullWheelTime = currTime
         }
       } else {
-        this.onMouseWheelDo(ev)
+        if (currTime - this.lastWheelTime > 50 && typeof ev.deltaX === 'number') {
+          this.lastWheelDirection = Math.abs(ev.deltaX) > Math.abs(ev.deltaY) ? 'x' : 'y'
+          if (this.lastWheelDirection === 'x') {
+            this.$emit('swipe', ev.deltaX > 0 ? 'left' : 'right')
+          }
+        }
+        if (this.lastWheelDirection === 'y') {
+          this.onMouseWheelDo(ev)
+        }
       }
+      this.lastWheelTime = currTime
     },
     onMouseWheelDo (ev) {
       // Value basis: One mouse wheel (wheelDelta=+-120) means 1.25/0.8 scale.
@@ -251,6 +262,9 @@ export default {
       // console.log('onMouseWheel', ev.wheelDelta, scaleDelta)
       this.tryToScale(scaleDelta)
       this.onInteractionEnd()
+    },
+    onScroll (ev) {
+      console.log(2)
     },
     onMouseDown (ev) {
       this.refreshContainerPos()

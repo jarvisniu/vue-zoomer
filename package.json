@@ -1,6 +1,6 @@
 {
   "name": "vue-zoomer",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Zoom the image or other thing with mouse or touch",
   "main": "dist/vue-zoomer.js",
   "scripts": {
