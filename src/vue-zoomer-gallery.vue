@@ -29,6 +29,7 @@
       :aspect-ratio="imageAspectRatios[selIndex + i - 1] || 1"
       :pivot="pivot"
       :limit-translation="limitTranslation"
+      :double-click-to-zoom="doubleClickToZoom"
       @swipe="onImageSwipe"
     >
       <img
@@ -52,6 +53,7 @@ export default {
     backgroundColor: { type: String, default: '#333' },
     pivot: { type: String, default: 'cursor' },
     limitTranslation: { type: Boolean, default: true },
+    doubleClickToZoom: { type: Boolean, default: true },
   },
   data () {
     return {

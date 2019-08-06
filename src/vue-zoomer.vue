@@ -33,6 +33,7 @@ export default {
     backgroundColor: { type: String, default: 'transparent' },
     pivot: { type: String, default: 'cursor' }, // other options: image-center
     limitTranslation: { type: Boolean, default: true },
+    doubleClickToZoom: { type: Boolean, default: true },
   },
   data () {
     return {
@@ -89,7 +90,9 @@ export default {
   mounted () {
     this.tapDetector = new TapDetector()
     this.tapDetector.attach(this.$el)
-    this.tapDetector.onDoubleTap(this.onDoubleTap)
+    if (this.doubleClickToZoom) {
+      this.tapDetector.onDoubleTap(this.onDoubleTap)
+    }
     // console.log('container size: ', this.containerWidth, this.containerHeight)
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()

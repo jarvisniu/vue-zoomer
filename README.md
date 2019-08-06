@@ -1,20 +1,22 @@
 # vue-zoomer
 
-Zoom the image or other thing with mouse or touch
+> Zoom the image or other thing with mouse or touch
 
-# Demo
+## Demo
 
 - [Single Image](https://unpkg.com/vue-zoomer/demo/basic.html)
 - [Gallery](https://unpkg.com/vue-zoomer/demo/gallery.html)
 
-# Usage
+## Usage
 
 Install:
+
 ```
 npm install vue-zoomer
 ```
 
 Import:
+
 ```js
 import Vue from 'vue'
 import VueZoomer from 'vue-zoomer'
@@ -24,6 +26,7 @@ Vue.use(VueZoomer)
 ```
 
 Single usage:
+
 ```html
 <v-zoomer style="width: 500px; height: 500px; border: solid 1px silver;">
   <img
@@ -34,6 +37,7 @@ Single usage:
 ```
 
 Gallery usage:
+
 ```html
 <v-zoomer-gallery
   style="width: 100vw; height: 100vh;"
@@ -42,25 +46,27 @@ Gallery usage:
 ></v-zoomer-gallery>
 ```
 
-# API
+## API
 
 > `out` means the prop is a child -> parent one-way binding. So there must have a `.sync` modifier.
 
-## &lt;v-zoomer&gt; Props
+### &lt;v-zoomer&gt; Props
 
 - `maxScale: number` - Maximum scale limit, default is 1;
 - `minScale: number` - Minimum scale limit, default is 5;
 - `zoomed: out boolean` - Whether zoomed in (scale equals to 1);
 - `pivot: 'cursor' | 'image-center'` - The pivot when zoom the content, default is `cursor`, can set to be `image-center`;
-- `limitTranslation: boolean` - Whether to limit the content into the container, default is true;
+- `limitTranslation: boolean` - Whether to limit the content into the container, default is `true`;
+- `doubleClickToZoom: boolean` - Whether to zoom in/out the content by double click, default is `true`;
 
-## &lt;v-zoomer-gallery&gt; Props
+### &lt;v-zoomer-gallery&gt; Props
 
 - `list: Array<string> required` - Displaying image urls;
 - `v-model(value): number required` - Index of current showing image;
 - `pivot: 'cursor' | 'image-center'` - The pivot when zoom the image, default is `cursor`, can set to be `image-center`;
-- `limitTranslation: boolean` - Whether to limit the image into the container, default is true;
+- `limitTranslation: boolean` - Whether to limit the image into the container, default is `true`;
+- `doubleClickToZoom: boolean` - Whether to zoom in/out the image by double click, default is `true`;
 
-# License
+## License
 
 MIT
