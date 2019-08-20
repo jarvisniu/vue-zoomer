@@ -8,6 +8,7 @@
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
     @mousemove="onMouseMove"
+    @mouseout="setPointerPosCenter"
     @touchstart="onTouchStart"
     @touchend="onTouchEnd"
     @touchmove="onTouchMove"
@@ -96,6 +97,7 @@ export default {
     // console.log('container size: ', this.containerWidth, this.containerHeight)
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
+    this.refreshContainerPos()
     this.loop()
   },
   destroyed () {
@@ -105,6 +107,21 @@ export default {
     // console.log('destroy')
   },
   methods: {
+    // API ---------------------------------------------------------------------
+    reset () {
+      this.scale = 1
+      this.panLocked = true
+      this.translateX = 0
+      this.translateY = 0
+    },
+    zoomIn(scale = 2) {
+      this.tryToScale(scale)
+      this.onInteractionEnd()
+    },
+    zoomOut(scale = 0.5) {
+      this.tryToScale(scale)
+      this.onInteractionEnd()
+    },
     // Main Logic --------------------------------------------------------------
     // scale
     // Zoom the image with the point at the pointer(mouse or pintch center) pinned.
@@ -126,6 +143,10 @@ export default {
         this.translateX = (0.5 + this.translateX - normMousePosX) * scaleDelta + normMousePosX - 0.5
         this.translateY = (0.5 + this.translateY - normMousePosY) * scaleDelta + normMousePosY - 0.5
       }
+    },
+    setPointerPosCenter () {
+      this.pointerPosX = this.containerLeft + this.containerWidth / 2
+      this.pointerPosY = this.containerTop + this.containerHeight / 2
     },
     // pan
     onPointerMove (newMousePosX, newMousePosY) {
@@ -202,18 +223,12 @@ export default {
       }
       this.onInteractionEnd()
     },
-    // reset
-    reset () {
-      this.scale = 1
-      this.panLocked = true
-      this.translateX = 0
-      this.translateY = 0
-    },
     // reactive
     onWindowResize () {
       let styles = window.getComputedStyle(this.$el)
       this.containerWidth = parseFloat(styles.width)
       this.containerHeight = parseFloat(styles.height)
+      this.setPointerPosCenter()
       this.limit()
     },
     refreshContainerPos () {
@@ -265,9 +280,6 @@ export default {
       // console.log('onMouseWheel', ev.wheelDelta, scaleDelta)
       this.tryToScale(scaleDelta)
       this.onInteractionEnd()
-    },
-    onScroll (ev) {
-      console.log(2)
     },
     onMouseDown (ev) {
       this.refreshContainerPos()

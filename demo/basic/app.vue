@@ -2,8 +2,11 @@
   <div style="padding: 100px;">
     <div>
       zoomed: {{ zoomed }}
+      <button @click="$refs.zoomer.zoomIn()">+</button>
+      <button @click="$refs.zoomer.zoomOut()">-</button>
     </div>
     <v-zoomer
+      ref="zoomer"
       style="width: 500px; height: 500px; border: solid 1px silver;"
       :max-scale="10"
       :zoomed.sync="zoomed"

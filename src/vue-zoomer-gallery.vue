@@ -108,13 +108,19 @@ export default {
     window.removeEventListener('resize', this.onWindowResize)
   },
   methods: {
-    // api
+    // api ---------------------------------------------------------------------
     reset () {
       this.$refs.zoomers.forEach(zoomer => {
         zoomer.reset()
       })
     },
-    // reactive
+    zoomIn (scale) {
+      if (this.$refs.zoomers[1]) this.$refs.zoomers[1].zoomIn(scale)
+    },
+    zoomOut (scale) {
+      if (this.$refs.zoomers[1]) this.$refs.zoomers[1].zoomOut(scale)
+    },
+    // events ------------------------------------------------------------------
     onWindowResize () {
       let styles = window.getComputedStyle(this.$el)
       this.containerWidth = parseFloat(styles.width)

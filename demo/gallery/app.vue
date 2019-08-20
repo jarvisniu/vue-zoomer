@@ -7,7 +7,6 @@
       v-model="selIndex"
     ></v-zoomer-gallery>
     <div style="box-sizing: border-box; height: 32px; padding: 4px;">
-      <button @click="$refs.gallery.reset()">reset</button>
       <button
         :disabled="selIndex === 0"
         @click="selIndex -= 1"
@@ -17,6 +16,9 @@
         :disabled="selIndex === urlImageList.length - 1"
         @click="selIndex += 1"
       >-&gt;</button>
+      <button @click="$refs.gallery.reset()">reset</button>
+      <button @click="$refs.gallery.zoomIn()">+</button>
+      <button @click="$refs.gallery.zoomOut()">-</button>
     </div>
   </div>
 </template>
