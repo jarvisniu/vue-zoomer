@@ -1,9 +1,0 @@
-.DS_Store
-
-.cache/
-# remove dist/
-node_modules/
-# esm/
-
-yarn.lock
-package-lock.json

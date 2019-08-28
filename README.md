@@ -4,8 +4,8 @@
 
 ## Demo
 
-- [Single Image](https://unpkg.com/vue-zoomer/demo/basic.html)
-- [Gallery](https://unpkg.com/vue-zoomer/demo/gallery.html)
+- [Single Image](https://unpkg.com/vue-zoomer/dist/demo/basic.html)
+- [Gallery](https://unpkg.com/vue-zoomer/dist/demo/gallery.html)
 
 ## Usage
 
@@ -48,13 +48,11 @@ Gallery usage:
 
 ## API
 
-> `out` means the prop is a child -> parent one-way binding. So there must have a `.sync` modifier.
-
 ### &lt;v-zoomer&gt; Props
 
 - `maxScale: number` - Maximum scale limit, default is 1;
 - `minScale: number` - Minimum scale limit, default is 5;
-- `zoomed: out boolean` - Whether zoomed in (scale equals to 1);
+- `zoomed: out boolean` - Whether zoomed in (scale equals to 1). `out` means the prop is a child to parent one-way binding. So there must have a `.sync` modifier.
 - `pivot: 'cursor' | 'image-center'` - The pivot when zoom the content, default is `cursor`, can set to be `image-center`;
 - `limitTranslation: boolean` - Whether to limit the content into the container, default is `true`;
 - `doubleClickToZoom: boolean` - Whether to zoom in/out the content by double click, default is `true`;

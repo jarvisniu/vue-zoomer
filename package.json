@@ -1,16 +1,17 @@
 {
   "name": "vue-zoomer",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Zoom the image or other thing with mouse or touch",
   "main": "dist/vue-zoomer.js",
+  "module": "dist/vue-zoomer.esm.js",
   "scripts": {
-    "dev:basic": "parcel demo/basic/index.html --port 5100",
-    "dev:gallery": "parcel demo/gallery/index.html --port 5100",
+    "dev-basic": "parcel demo/basic/index.html --port 5100",
+    "dev-gallery": "parcel demo/gallery/index.html --port 5100",
     "clean": "rm -rf .cache && rm -rf dist",
-    "build-umd": "parcel build src/index.js --global VueZoomer --out-file vue-zoomer.js --no-source-maps",
-    "build-esm": "rollup -c",
-    "build": "npm run clean && npm run build-umd",
-    "pub": "npm run build && npm publish"
+    "build-basic": "parcel build demo/basic/index.html --public-url . --out-dir dist/demo --out-file basic.html",
+    "build-gallery": "parcel build demo/gallery/index.html --public-url . --out-dir dist/demo --out-file gallery.html",
+    "build-lib": "rollup -c",
+    "build": "npm run clean && npm run build-basic && npm run build-gallery && npm run build-lib"
   },
   "keywords": [
     "zoom",
@@ -28,8 +29,6 @@
     "parcel-bundler": "^1.11.0",
     "rollup": "^1.20.2",
     "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-css-only": "^1.0.0",
-    "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-stylus-css-modules": "^1.5.0",
     "rollup-plugin-vue": "^5.0.1",
@@ -37,5 +36,8 @@
     "vue": "^2.6.7",
     "vue-hot-reload-api": "^2.3.3",
     "vue-template-compiler": "^2.6.7"
-  }
+  },
+  "files": [
+    "dist/**/*"
+  ]
 }
