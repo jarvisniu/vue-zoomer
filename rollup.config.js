@@ -3,30 +3,32 @@ import cjs from 'rollup-plugin-commonjs'
 import stylus from 'rollup-plugin-stylus-css-modules'
 import vue from 'rollup-plugin-vue'
 
-let plugins = [
-  resolve(),
-  cjs(),
-  stylus(),
-  vue({
-    needMap: false,
-  }),
-]
+import pkg from './package.json'
 
-export default [
-  {
-    input: 'src/index.js',
-    output: {
+const banner = `// vue-zoomer v${ pkg.version } - Jarvis Niu
+// https://github.com/jarvisniu/vue-zoomer\n`
+
+export default {
+  input: 'src/index.js',
+  output: [
+    {
+      banner,
+      file: 'dist/vue-zoomer.esm.js',
+      format: 'esm',
+    },
+    {
+      banner,
       file: 'dist/vue-zoomer.js',
       format: 'umd',
       name: 'VueZoomer',
     },
-    plugins,
-  }, {
-    input: 'src/index.js',
-    output: {
-      file: 'dist/vue-zoomer.esm.js',
-      format: 'esm',
-    },
-    plugins,
-  },
-]
+  ],
+  plugins: [
+    resolve(),
+    cjs(),
+    stylus(),
+    vue({
+      needMap: false,
+    }),
+  ],
+}
