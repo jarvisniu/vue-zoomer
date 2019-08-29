@@ -2,6 +2,7 @@ import resolve from 'rollup-plugin-node-resolve'
 import cjs from 'rollup-plugin-commonjs'
 import stylus from 'rollup-plugin-stylus-css-modules'
 import vue from 'rollup-plugin-vue'
+import { terser } from 'rollup-plugin-terser'
 
 import pkg from './package.json'
 
@@ -22,6 +23,12 @@ export default {
       format: 'umd',
       name: 'VueZoomer',
     },
+    {
+      banner,
+      file: 'dist/vue-zoomer.min.js',
+      format: 'umd',
+      name: 'VueZoomer',
+    },
   ],
   plugins: [
     resolve(),
@@ -29,6 +36,9 @@ export default {
     stylus(),
     vue({
       needMap: false,
+    }),
+    terser({
+      include: /^.+\.min\.js$/,
     }),
   ],
 }
