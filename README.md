@@ -50,8 +50,8 @@ Gallery usage:
 
 ### &lt;v-zoomer&gt; Props
 
-- `maxScale: number` - Maximum scale limit, default is 1;
-- `minScale: number` - Minimum scale limit, default is 5;
+- `maxScale: number` - Maximum scale limit, default is 5;
+- `minScale: number` - Minimum scale limit, default is 1;
 - `zoomed: out boolean` - Whether zoomed in (scale equals to 1). `out` means the prop is a child to parent one-way binding. So there must have a `.sync` modifier.
 - `pivot: 'cursor' | 'image-center'` - The pivot when zoom the content, default is `cursor`, can set to be `image-center`;
 - `limitTranslation: boolean` - Whether to limit the content into the container, default is `true`;
