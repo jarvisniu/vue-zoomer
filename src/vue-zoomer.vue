@@ -5,6 +5,7 @@
     class="vue-zoomer"
     :style="{backgroundColor: backgroundColor}"
     @mousewheel.prevent="onMouseWheel"
+    @DOMMouseScroll="onMouseWheel"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
     @mousemove="onMouseMove"
@@ -56,7 +57,7 @@ export default {
       // Mouse states
       lastFullWheelTime: 0,
       lastWheelTime: 0,
-      lastWheelDirection: 'x',
+      lastWheelDirection: 'y',
       isPointerDown: false,
       pointerPosX: -1,
       pointerPosY: -1,
@@ -124,7 +125,7 @@ export default {
     },
     // Main Logic --------------------------------------------------------------
     // scale
-    // Zoom the image with the point at the pointer(mouse or pintch center) pinned.
+    // Zoom the image with the point at the pointer(mouse or pinch center) pinned.
     // Simplify: This can be regard as vector pointer to old-image-center scaling.
     tryToScale (scaleDelta) {
       let newScale = this.scale * scaleDelta
@@ -232,8 +233,9 @@ export default {
       this.limit()
     },
     refreshContainerPos () {
-      this.containerLeft = +this.$el.offsetLeft || 0
-      this.containerTop = +this.$el.offsetTop || 0
+      let rect = this.$el.getBoundingClientRect()
+      this.containerLeft = rect.left
+      this.containerTop = rect.top
     },
     loop () {
       this.animScale = this.gainOn(this.animScale, this.scale)
@@ -254,30 +256,30 @@ export default {
     // Mouse Events ------------------------------------------------------------
     // Mouse wheel scroll,  TrackPad pinch or TrackPad scroll
     onMouseWheel (ev) {
+      if (ev.detail) ev.wheelDelta = ev.detail * -10
       let currTime = Date.now()
       if (Math.abs(ev.wheelDelta) === 120) {
         // Throttle the TouchPad pinch on Mac, or it will be too sensitive
         if (currTime - this.lastFullWheelTime > 50) {
-          this.onMouseWheelDo(ev)
+          this.onMouseWheelDo(ev.wheelDelta)
           this.lastFullWheelTime = currTime
         }
       } else {
         if (currTime - this.lastWheelTime > 50 && typeof ev.deltaX === 'number') {
-          this.lastWheelDirection = Math.abs(ev.deltaX) > Math.abs(ev.deltaY) ? 'x' : 'y'
+          this.lastWheelDirection = (ev.detail == 0 && Math.abs(ev.deltaX) > Math.abs(ev.deltaY)) ? 'x' : 'y'
           if (this.lastWheelDirection === 'x') {
             this.$emit('swipe', ev.deltaX > 0 ? 'left' : 'right')
           }
         }
         if (this.lastWheelDirection === 'y') {
-          this.onMouseWheelDo(ev)
+          this.onMouseWheelDo(ev.wheelDelta)
         }
       }
       this.lastWheelTime = currTime
     },
-    onMouseWheelDo (ev) {
+    onMouseWheelDo (wheelDelta) {
       // Value basis: One mouse wheel (wheelDelta=+-120) means 1.25/0.8 scale.
-      let scaleDelta = Math.pow(1.25, ev.wheelDelta / 120)
-      // console.log('onMouseWheel', ev.wheelDelta, scaleDelta)
+      let scaleDelta = Math.pow(1.25, wheelDelta / 120)
       this.tryToScale(scaleDelta)
       this.onInteractionEnd()
     },
@@ -366,5 +368,8 @@ export default {
   & > img
     // remove the 4px gap below the image
     vertical-align top
+    user-drag none
     -webkit-user-drag none
+    -moz-user-drag none
+    // pointer-events none // Fix firefox user-drag: none
 </style>

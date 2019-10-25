@@ -2,7 +2,7 @@
   <div style="padding: 0px;">
     <v-zoomer-gallery
       ref="gallery"
-      style="width: 100vw; height: calc(100vh - 32px);"
+      style="left: 20px; width: calc(100vw - 40px); height: calc(100vh - 32px);"
       :list="urlImageList"
       v-model="selIndex"
     ></v-zoomer-gallery>

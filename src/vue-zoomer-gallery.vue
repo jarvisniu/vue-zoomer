@@ -99,6 +99,13 @@ export default {
         this.animSelIndex = val
       }
     },
+    selIndex() {
+      this.$nextTick(() => {
+        this.$refs.zoomers.forEach(zoomer => {
+          zoomer.refreshContainerPos()
+        })
+      })
+    },
   },
   mounted () {
     window.addEventListener('resize', this.onWindowResize)
