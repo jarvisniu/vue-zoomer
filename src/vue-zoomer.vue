@@ -317,6 +317,7 @@ export default {
         let distY = ev.touches[0].clientY - ev.touches[1].clientY
         this.twoFingerInitDist = Math.sqrt(distX * distX + distY * distY)
       }
+      this.$emit("onTouchStart");
       // console.log('onTouchStart', ev.touches)
     },
     onTouchEnd (ev) {
@@ -329,6 +330,7 @@ export default {
         this.pointerPosX = ev.touches[0].clientX
         this.pointerPosY = ev.touches[0].clientY
       }
+      this.$emit("onTouchEnd");
       // console.log('onTouchEnd', ev.touches.length)
     },
     onTouchMove (ev) {

@@ -10,6 +10,8 @@
       style="width: 500px; height: 500px; border: solid 1px silver;"
       :max-scale="10"
       :zoomed.sync="zoomed"
+      @onTouchStart="onTouchStart"
+      @onTouchEnd="onTouchEnd"
     >
       <img src="../assets/landscape-1.jpg" style="object-fit: contain; width: 100%; height: 100%;">
     </v-zoomer>
@@ -23,5 +25,13 @@ export default {
       zoomed: false,
     }
   },
+  methods:{
+    onTouchStart(e) {
+      console.log(' touch start')
+    },
+    onTouchEnd(e) {
+      console.log(' touch end')
+    }
+  }
 }
 </script>
