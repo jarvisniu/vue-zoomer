@@ -127,6 +127,9 @@ export default {
     zoomOut (scale) {
       if (this.$refs.zoomers[1]) this.$refs.zoomers[1].zoomOut(scale)
     },
+    currentZoomed() {
+      return this.currentZoomed;
+    },
     // events ------------------------------------------------------------------
     onWindowResize () {
       let styles = window.getComputedStyle(this.$el)
