@@ -123,6 +123,9 @@ export default {
       this.tryToScale(scale)
       this.onInteractionEnd()
     },
+    currentZoomed() {
+      return this.currentZoomed;
+    },
     // Main Logic --------------------------------------------------------------
     // scale
     // Zoom the image with the point at the pointer(mouse or pinch center) pinned.
