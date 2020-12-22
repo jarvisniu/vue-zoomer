@@ -1,6 +1,6 @@
 {
   "name": "vue-zoomer",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "Zoom the image or other thing with mouse or touch",
   "main": "dist/vue-zoomer.min.js",
   "module": "dist/vue-zoomer.esm.js",
@@ -30,7 +30,7 @@
     "rollup": "^1.20.2",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-stylus-css-modules": "^1.5.0",
+    "rollup-plugin-stylus-compiler": "^1.0.1",
     "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-vue": "^5.0.1",
     "stylus": "^0.54.5",

@@ -1,6 +1,6 @@
 import resolve from 'rollup-plugin-node-resolve'
 import cjs from 'rollup-plugin-commonjs'
-import stylus from 'rollup-plugin-stylus-css-modules'
+import stylus from 'rollup-plugin-stylus-compiler'
 import vue from 'rollup-plugin-vue'
 import { terser } from 'rollup-plugin-terser'
 

@@ -35,8 +35,10 @@
       <img
         v-if="selIndex + i - 1 > -1 && selIndex + i - 1 < list.length"
         :src="list[selIndex + i - 1]"
+        draggable="false"
         style="object-fit: contain; width: 100%; height: 100%;"
         @load="onImageLoad(selIndex + i - 1, $event)"
+        @dragstart="onImageDragStart"
       >
     </v-zoomer>
   </div>
@@ -153,6 +155,11 @@ export default {
         // only apply the animation
         this.paginate(0)
       }
+    },
+    // Stop Firefox dragging the image
+    onImageDragStart(ev) {
+      ev.preventDefault();
+      return false
     },
     paginate (deltaIndex) {
       let targetIndex = this.selIndex + deltaIndex
