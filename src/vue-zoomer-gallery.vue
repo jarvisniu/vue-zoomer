@@ -30,6 +30,7 @@
       :pivot="pivot"
       :limit-translation="limitTranslation"
       :double-click-to-zoom="doubleClickToZoom"
+      :mouse-wheel-to-zoom="mouseWheelToZoom"
       @swipe="onImageSwipe"
     >
       <img
@@ -56,6 +57,7 @@ export default {
     pivot: { type: String, default: 'cursor' },
     limitTranslation: { type: Boolean, default: true },
     doubleClickToZoom: { type: Boolean, default: true },
+    mouseWheelToZoom: { type: Boolean, default: true },
   },
   data () {
     return {

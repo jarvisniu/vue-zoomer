@@ -1,10 +1,9 @@
 <!-- vue-zoomer: https://github.com/jarvisniu/vue-zoomer -->
 <template>
-  <!-- mousewheel.prevent is used to stop the page scroll elastic effects -->
   <div
     class="vue-zoomer"
     :style="{backgroundColor: backgroundColor}"
-    @mousewheel.prevent="onMouseWheel"
+    @mousewheel="onMouseWheel"
     @DOMMouseScroll="onMouseWheel"
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
@@ -36,6 +35,7 @@ export default {
     pivot: { type: String, default: 'cursor' }, // other options: image-center
     limitTranslation: { type: Boolean, default: true },
     doubleClickToZoom: { type: Boolean, default: true },
+    mouseWheelToZoom: { type: Boolean, default: true },
   },
   data () {
     return {
@@ -256,6 +256,9 @@ export default {
     // Mouse Events ------------------------------------------------------------
     // Mouse wheel scroll,  TrackPad pinch or TrackPad scroll
     onMouseWheel (ev) {
+      if (!this.mouseWheelToZoom) return
+      // prevent is used to stop the page scroll elastic effects
+      ev.preventDefault()
       if (ev.detail) ev.wheelDelta = ev.detail * -10
       let currTime = Date.now()
       if (Math.abs(ev.wheelDelta) === 120) {
@@ -356,7 +359,6 @@ export default {
 
 <style lang="stylus" scoped>
 .vue-zoomer
-  // position relative
   overflow hidden
   transition background-color 0.5s
 

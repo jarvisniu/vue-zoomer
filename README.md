@@ -55,6 +55,7 @@ Gallery usage:
 - `pivot: 'cursor' | 'image-center'` - The pivot when zoom the content, default is `cursor`, can set to be `image-center`;
 - `limitTranslation: boolean` - Whether to limit the content into the container, default is `true`;
 - `doubleClickToZoom: boolean` - Whether to zoom in/out the content by double click, default is `true`;
+- `mouseWheelToZoom: boolean` - Whether to zoom in/out the content by mouse wheel, default is `true`;
 
 ### &lt;v-zoomer&gt; Methods
 
@@ -69,6 +70,7 @@ Gallery usage:
 - `pivot: 'cursor' | 'image-center'` - The pivot when zoom the image, default is `cursor`, can set to be `image-center`;
 - `limitTranslation: boolean` - Whether to limit the image into the container, default is `true`;
 - `doubleClickToZoom: boolean` - Whether to zoom in/out the image by double click, default is `true`;
+- `mouseWheelToZoom: boolean` - Whether to zoom in/out the image by mouse wheel, default is `true`;
 
 ### &lt;v-zoomer-gallery&gt; Methods
 
