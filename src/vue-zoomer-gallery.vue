@@ -19,7 +19,7 @@
     <v-zoomer
       v-for="(n, i) in 3"
       ref="zoomers"
-      :key="i + selIndex"
+      :key="i + '-' + selIndex"
       :class="['left', 'middle', 'right'][i]"
       class="slide"
       :style="[leftStyle, middleStyle, rightStyle][i]"
