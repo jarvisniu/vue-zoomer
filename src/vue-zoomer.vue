@@ -33,6 +33,7 @@ export default {
     aspectRatio: { type: Number, default: 1 },
     backgroundColor: { type: String, default: 'transparent' },
     pivot: { type: String, default: 'cursor' }, // other options: image-center
+    zoomingElastic: { type: Boolean, default: true },
     limitTranslation: { type: Boolean, default: true },
     doubleClickToZoom: { type: Boolean, default: true },
     mouseWheelToZoom: { type: Boolean, default: true },
@@ -129,12 +130,17 @@ export default {
     // Simplify: This can be regard as vector pointer to old-image-center scaling.
     tryToScale (scaleDelta) {
       let newScale = this.scale * scaleDelta
-       // damping
-      if (newScale < this.minScale || newScale > this.maxScale) {
-        let log = Math.log2(scaleDelta)
-        log *= 0.2
-        scaleDelta = Math.pow(2, log)
-        newScale = this.scale * scaleDelta
+      if (this.zoomingElastic) {
+        // damping
+        if (newScale < this.minScale || newScale > this.maxScale) {
+          let log = Math.log2(scaleDelta)
+          log *= 0.2
+          scaleDelta = Math.pow(2, log)
+          newScale = this.scale * scaleDelta
+        }
+      } else {
+        if (newScale < this.minScale) newScale = this.minScale
+        else if (newScale > this.maxScale) newScale = this.maxScale
       }
       scaleDelta = newScale / this.scale
       this.scale = newScale
@@ -360,7 +366,6 @@ export default {
 <style lang="stylus" scoped>
 .vue-zoomer
   overflow hidden
-  transition background-color 0.5s
 
 .zoomer
   // position absolute

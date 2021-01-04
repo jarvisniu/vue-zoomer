@@ -28,6 +28,7 @@
       :reset-trigger="i"
       :aspect-ratio="imageAspectRatios[selIndex + i - 1] || 1"
       :pivot="pivot"
+      :zooming-elastic="zoomingElastic"
       :limit-translation="limitTranslation"
       :double-click-to-zoom="doubleClickToZoom"
       :mouse-wheel-to-zoom="mouseWheelToZoom"
@@ -55,6 +56,7 @@ export default {
     list: { type: Array, required: true },
     backgroundColor: { type: String, default: '#333' },
     pivot: { type: String, default: 'cursor' },
+    zoomingElastic: { type: Boolean, default: true },
     limitTranslation: { type: Boolean, default: true },
     doubleClickToZoom: { type: Boolean, default: true },
     mouseWheelToZoom: { type: Boolean, default: true },
@@ -227,7 +229,6 @@ export default {
 <style lang="stylus" scoped>
 .vue-zoomer-gallery
   position relative
-  // border solid 1px red
   overflow hidden
   user-select none
   min-width 100px
@@ -246,6 +247,5 @@ export default {
   object-fit contain
   width 100%
   height 100%
-  // border solid 1px silver
   -webkit-user-drag none
 </style>

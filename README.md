@@ -53,6 +53,7 @@ Gallery usage:
 - `minScale: number` - Minimum scale limit, default is 1;
 - `zoomed: out boolean` - Whether zoomed in (scale equals to 1). `out` means the prop is a child to parent one-way binding. So there must have a `.sync` modifier.
 - `pivot: 'cursor' | 'image-center'` - The pivot when zoom the content, default is `cursor`, can set to be `image-center`;
+- `zoomingElastic: boolean` - Whether to use the elastic effect when reaching the max/min zooming bounds, default is `true`;
 - `limitTranslation: boolean` - Whether to limit the content into the container, default is `true`;
 - `doubleClickToZoom: boolean` - Whether to zoom in/out the content by double click, default is `true`;
 - `mouseWheelToZoom: boolean` - Whether to zoom in/out the content by mouse wheel, default is `true`;
@@ -67,10 +68,11 @@ Gallery usage:
 
 - `list: Array<string> required` - Displaying image urls;
 - `v-model(value): number required` - Index of current showing image;
-- `pivot: 'cursor' | 'image-center'` - The pivot when zoom the image, default is `cursor`, can set to be `image-center`;
-- `limitTranslation: boolean` - Whether to limit the image into the container, default is `true`;
-- `doubleClickToZoom: boolean` - Whether to zoom in/out the image by double click, default is `true`;
-- `mouseWheelToZoom: boolean` - Whether to zoom in/out the image by mouse wheel, default is `true`;
+- `pivot: 'cursor' | 'image-center'` - Same as above;
+- `zoomingElastic: boolean` - Same as above;
+- `limitTranslation: boolean` - Same as above;
+- `doubleClickToZoom: boolean` - Same as above;
+- `mouseWheelToZoom: boolean` - Same as above;
 
 ### &lt;v-zoomer-gallery&gt; Methods
 

@@ -4,6 +4,7 @@
       ref="gallery"
       style="left: 20px; width: calc(100vw - 40px); height: calc(100vh - 32px);"
       :list="urlImageList"
+      :zooming-elastic="false"
       v-model="selIndex"
     ></v-zoomer-gallery>
     <div style="box-sizing: border-box; height: 32px; padding: 4px;">
