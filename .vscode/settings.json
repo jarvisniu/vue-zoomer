@@ -1,3 +1,8 @@
 {
-  "deno.enable": false
+  "deno.enable": false,
+  "search.exclude": {
+    "dist/**/*": true,
+    ".cache/**/*": true,
+    "src/debounce.min.js": true,
+  }
 }

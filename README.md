@@ -2,6 +2,10 @@
 
 > Zoom the image or other thing with mouse or touch
 
+## For Vue 3
+
+This library has released a Vue 3 beta version [here](https://github.com/jarvisniu/vue-zoomer/tree/next).
+
 ## Demo
 
 - [Single Image](https://unpkg.com/vue-zoomer/dist/demo/basic.html)

@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import _debounce from 'lodash.debounce'
+import _debounce from './debounce.min.js'
 
 import TapDetector from './TapDetector'
 
@@ -363,20 +363,20 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.vue-zoomer
-  overflow hidden
-
-.zoomer
-  // position absolute
-  transform-origin 50% 50%
-  width 100%
-  height 100%
-  & > img
-    // remove the 4px gap below the image
-    vertical-align top
-    user-drag none
-    -webkit-user-drag none
-    -moz-user-drag none
-    // pointer-events none // Fix firefox user-drag: none
+<style scoped>
+.vue-zoomer {
+  overflow: hidden;
+}
+.zoomer {
+  transform-origin: 50% 50%;
+  width: 100%;
+  height: 100%;
+}
+.zoomer > img {
+  /* remove the 4px gap below the image */
+  vertical-align: top;
+  user-drag: none;
+  -webkit-user-drag: none;
+  -moz-user-drag: none;
+}
 </style>

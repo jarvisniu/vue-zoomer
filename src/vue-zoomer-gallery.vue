@@ -226,26 +226,27 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.vue-zoomer-gallery
-  position relative
-  overflow hidden
-  user-select none
-  min-width 100px
-  min-height 100px
-  & > *
-    display inline-block
+<style scoped>
+.vue-zoomer-gallery {
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  min-width: 100px;
+  min-height: 100px;
+}
+.vue-zoomer-gallery > * {
+  display: inline-block;
+}
+.vue-zoomer-gallery.anim .slide {
+  transition: left 0.4s;
+}
 
-  // Transition Animations
-  &.anim
-    .slide
-      transition left 0.4s
-
-.slide
-  position absolute
-  top 0
-  object-fit contain
-  width 100%
-  height 100%
-  -webkit-user-drag none
+.slide {
+  position: absolute;
+  top: 0;
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  -webkit-user-drag: none;
+}
 </style>
