@@ -1,6 +1,7 @@
 <!-- vue-zoomer: https://github.com/jarvisniu/vue-zoomer -->
 <template>
   <div
+    ref="root"
     class="vue-zoomer"
     :style="{backgroundColor: backgroundColor}"
     @mousewheel="onMouseWheel"
@@ -20,7 +21,7 @@
 </template>
 
 <script>
-import _debounce from 'lodash.debounce'
+import _debounce from './debounce.min.js'
 
 import TapDetector from './TapDetector'
 
@@ -92,7 +93,7 @@ export default {
   },
   mounted () {
     this.tapDetector = new TapDetector()
-    this.tapDetector.attach(this.$el)
+    this.tapDetector.attach(this.$refs.root)
     if (this.doubleClickToZoom) {
       this.tapDetector.onDoubleTap(this.onDoubleTap)
     }
@@ -102,8 +103,8 @@ export default {
     this.refreshContainerPos()
     this.loop()
   },
-  destroyed () {
-    this.tapDetector.detach(this.$el)
+  beforeUnmount () {
+    this.tapDetector.detach(this.$refs.root)
     window.removeEventListener('resize', this.onWindowResize)
     window.cancelAnimationFrame(this.raf)
     // console.log('destroy')
@@ -232,14 +233,14 @@ export default {
     },
     // reactive
     onWindowResize () {
-      let styles = window.getComputedStyle(this.$el)
+      let styles = window.getComputedStyle(this.$refs.root)
       this.containerWidth = parseFloat(styles.width)
       this.containerHeight = parseFloat(styles.height)
       this.setPointerPosCenter()
       this.limit()
     },
     refreshContainerPos () {
-      let rect = this.$el.getBoundingClientRect()
+      let rect = this.$refs.root.getBoundingClientRect()
       this.containerLeft = rect.left
       this.containerTop = rect.top
     },
@@ -363,20 +364,20 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.vue-zoomer
-  overflow hidden
-
-.zoomer
-  // position absolute
-  transform-origin 50% 50%
-  width 100%
-  height 100%
-  & > img
-    // remove the 4px gap below the image
-    vertical-align top
-    user-drag none
-    -webkit-user-drag none
-    -moz-user-drag none
-    // pointer-events none // Fix firefox user-drag: none
+<style scoped>
+.vue-zoomer {
+  overflow: hidden;
+}
+.zoomer {
+  transform-origin: 50% 50%;
+  width: 100%;
+  height: 100%;
+}
+.zoomer > img {
+  /* remove the 4px gap below the image */
+  vertical-align: top;
+  user-drag: none;
+  -webkit-user-drag: none;
+  -moz-user-drag: none;
+}
 </style>

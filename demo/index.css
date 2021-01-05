@@ -1,0 +1,14 @@
+body {
+  font-family: Arial, Helvetica, DengXian, sans-serif;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.vue-zoomer-gallery {
+  left: 20px;
+  width: calc(100vw - 60px);
+  height: calc(100vh - 50px)
+}

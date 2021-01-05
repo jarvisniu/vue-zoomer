@@ -1,13 +1,31 @@
-# vue-zoomer
+# vue-zoomer @next for Vue 3
 
 > Zoom the image or other thing with mouse or touch
 
-## Demo
+## Usage (Vue 3 Differences)
 
-- [Single Image](https://unpkg.com/vue-zoomer/dist/demo/basic.html)
-- [Gallery](https://unpkg.com/vue-zoomer/dist/demo/gallery.html)
+Demo (built with [Vite](https://vitejs.dev/) 2):
 
-## Usage
+[Gallery](https://unpkg.com/vue-zoomer@next/dist/index.html)
+
+Install:
+
+```bash
+npm install vue-zoomer@next
+```
+
+Import:
+
+```js
+import { createApp } from 'vue'
+import VueZoomer from 'vue-zoomer'
+
+const app = createApp(App)
+app.use(VueZoomer)
+app.mount('#app')
+```
+
+## Usage ( Below are Vue 2)
 
 Install:
 

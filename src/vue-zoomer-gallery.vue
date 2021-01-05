@@ -1,6 +1,7 @@
 <template>
   <!-- touchmove.prevent is used to stop the page scroll elastic effects -->
   <div
+    ref="root"
     :class="{
       'anim': autoSliding && !isPointerDown,
     }"
@@ -18,13 +19,13 @@
   >
     <v-zoomer
       v-for="(n, i) in 3"
-      ref="zoomers"
+      :ref="el => { zoomerRefs[i] = el }"
       :key="i + '-' + selIndex"
       :class="['left', 'middle', 'right'][i]"
       class="slide"
       :style="[leftStyle, middleStyle, rightStyle][i]"
       :max-scale="10"
-      :zoomed.sync="currentZoomed"
+      v-model:zoomed="currentZoomed"
       :reset-trigger="i"
       :aspect-ratio="imageAspectRatios[selIndex + i - 1] || 1"
       :pivot="pivot"
@@ -47,12 +48,11 @@
 </template>
 
 <script>
-
 const SLIDE_WIDTH_THRESH = 50 // in px
 
 export default {
   props: {
-    value: { type: Number, required: true },
+    modelValue: { type: Number, required: true },
     list: { type: Array, required: true },
     backgroundColor: { type: String, default: '#333' },
     pivot: { type: String, default: 'cursor' },
@@ -63,12 +63,13 @@ export default {
   },
   data () {
     return {
+      zoomerRefs: [],
       // env states
       containerWidth: 1,
       containerHeight: 1,
       // main states
-      selIndex: this.value,
-      animSelIndex: this.value,
+      selIndex: this.modelValue,
+      animSelIndex: this.modelValue,
       currentZoomed: false,
       autoSliding: false,
       imageAspectRatios: [], // aspect ratio (width / height) of images
@@ -99,7 +100,7 @@ export default {
     },
   },
   watch: {
-    value (val) {
+    modelValue (val) {
       if (val !== this.animSelIndex) {
         this.selIndex = val
         this.animSelIndex = val
@@ -107,7 +108,7 @@ export default {
     },
     selIndex() {
       this.$nextTick(() => {
-        this.$refs.zoomers.forEach(zoomer => {
+        this.zoomerRefs.forEach(zoomer => {
           zoomer.refreshContainerPos()
         })
       })
@@ -117,25 +118,25 @@ export default {
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
   },
-  destroyed () {
+  unmounted () {
     window.removeEventListener('resize', this.onWindowResize)
   },
   methods: {
     // api ---------------------------------------------------------------------
     reset () {
-      this.$refs.zoomers.forEach(zoomer => {
+      this.zoomerRefs.forEach(zoomer => {
         zoomer.reset()
       })
     },
     zoomIn (scale) {
-      if (this.$refs.zoomers[1]) this.$refs.zoomers[1].zoomIn(scale)
+      if (this.zoomerRefs[1]) this.zoomerRefs[1].zoomIn(scale)
     },
     zoomOut (scale) {
-      if (this.$refs.zoomers[1]) this.$refs.zoomers[1].zoomOut(scale)
+      if (this.zoomerRefs[1]) this.zoomerRefs[1].zoomOut(scale)
     },
     // events ------------------------------------------------------------------
     onWindowResize () {
-      let styles = window.getComputedStyle(this.$el)
+      let styles = window.getComputedStyle(this.$refs.root)
       this.containerWidth = parseFloat(styles.width)
       this.containerHeight = parseFloat(styles.height)
     },
@@ -175,7 +176,7 @@ export default {
       this.slideOffsetX = this.containerWidth * -deltaIndex
       this.autoSliding = true
       // update the selIndex before the animation to remove the delay feeling
-      this.$emit('input', targetIndex)
+      this.$emit('update:modelValue', targetIndex)
       this.animSelIndex = targetIndex
       setTimeout(() => {
         this.selIndex = targetIndex
@@ -217,7 +218,7 @@ export default {
     },
     onImageLoad (index, ev) {
       let aspectRatio = ev.target.naturalWidth / ev.target.naturalHeight
-      this.$set(this.imageAspectRatios, index, aspectRatio)
+      this.imageAspectRatios[index] = aspectRatio
     },
     onImageSwipe (direction) {
       this.paginate(direction == 'right' ? -1 : 1)
@@ -226,26 +227,27 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.vue-zoomer-gallery
-  position relative
-  overflow hidden
-  user-select none
-  min-width 100px
-  min-height 100px
-  & > *
-    display inline-block
+<style scoped>
+.vue-zoomer-gallery {
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  min-width: 100px;
+  min-height: 100px;
+}
+.vue-zoomer-gallery > * {
+  display: inline-block;
+}
+.vue-zoomer-gallery.anim .slide {
+  transition: left 0.4s;
+}
 
-  // Transition Animations
-  &.anim
-    .slide
-      transition left 0.4s
-
-.slide
-  position absolute
-  top 0
-  object-fit contain
-  width 100%
-  height 100%
-  -webkit-user-drag none
+.slide {
+  position: absolute;
+  top: 0;
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  -webkit-user-drag: none;
+}
 </style>
