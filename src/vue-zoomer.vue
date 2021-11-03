@@ -36,6 +36,7 @@ export default {
     zoomingElastic: { type: Boolean, default: true },
     limitTranslation: { type: Boolean, default: true },
     doubleClickToZoom: { type: Boolean, default: true },
+    clickToZoom: { type: Boolean, default: true },
     mouseWheelToZoom: { type: Boolean, default: true },
   },
   data () {
@@ -70,14 +71,36 @@ export default {
     }
   },
   computed: {
+    isZoomedIn(){
+      return this.scale > this.minScale
+    },
+    isZoomedOut(){
+      return this.scale === this.minScale
+    },
+    isDragging(){
+      return this.isPointerDown
+    },
+    cursor(){
+      if(this.isZoomedIn && !this.isDragging){
+        return 'zoom-out'
+      }
+      if(this.isZoomedOut){
+        return 'zoom-in'
+      }
+      if(this.isDragging){
+        return 'grabbing'
+      }
+    },
     wrapperStyle () {
       let translateX = this.containerWidth * this.animTranslateX
       let translateY = this.containerHeight * this.animTranslateY
+
       return {
         transform: [
           `translate(${ translateX }px, ${ translateY }px)`,
           `scale(${ this.animScale })`,
-        ].join(' ')
+        ].join(' '),
+        cursor: this.cursor
       }
     },
   },
@@ -93,9 +116,15 @@ export default {
   mounted () {
     this.tapDetector = new TapDetector()
     this.tapDetector.attach(this.$el)
+    
     if (this.doubleClickToZoom) {
-      this.tapDetector.onDoubleTap(this.onDoubleTap)
+      this.tapDetector.onDoubleTap(this.onTap)
     }
+
+    if (this.clickToZoom) {
+      this.tapDetector.onSingleTap(this.onTap)
+    }
+
     // console.log('container size: ', this.containerWidth, this.containerHeight)
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
@@ -218,7 +247,7 @@ export default {
       let containerRatio = this.containerWidth / this.containerHeight
       return containerRatio > this.aspectRatio ? 'x' : 'y'
     },
-    onDoubleTap (ev) {
+    onTap (ev) {
       if (this.scale === 1) {
         if (ev.clientX > 0) {
           this.pointerPosX = ev.clientX

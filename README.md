@@ -59,6 +59,7 @@ Gallery usage:
 - `pivot: 'cursor' | 'image-center'` - The pivot when zoom the content, default is `cursor`, can set to be `image-center`;
 - `zoomingElastic: boolean` - Whether to use the elastic effect when reaching the max/min zooming bounds, default is `true`;
 - `limitTranslation: boolean` - Whether to limit the content into the container, default is `true`;
+- `singleClickToZoom: boolean` - Whether to zoom in/out the content by single click, default is `true`;
 - `doubleClickToZoom: boolean` - Whether to zoom in/out the content by double click, default is `true`;
 - `mouseWheelToZoom: boolean` - Whether to zoom in/out the content by mouse wheel, default is `true`;
 
