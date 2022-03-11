@@ -8,8 +8,10 @@ This library has released a Vue 3 beta version [here](https://github.com/jarvisn
 
 ## Demo
 
-- [Single Image](https://unpkg.com/vue-zoomer/dist/demo/basic.html)
-- [Gallery](https://unpkg.com/vue-zoomer/dist/demo/gallery.html)
+- [Single Image](https://unpkg.com/vue-zoomer/dist/demo/basic.html) -
+  [(src)](https://github.com/jarvisniu/vue-zoomer/blob/master/demo/basic/app.vue)
+- [Gallery](https://unpkg.com/vue-zoomer/dist/demo/gallery.html) -
+  [(src)](https://github.com/jarvisniu/vue-zoomer/blob/master/demo/gallery/app.vue)
 
 ## Usage
 
@@ -19,13 +21,35 @@ Install:
 npm install vue-zoomer
 ```
 
-Import:
+Import and register globally:
 
 ```js
 import Vue from 'vue'
 import VueZoomer from 'vue-zoomer'
 
 Vue.use(VueZoomer)
+```
+
+Import and register locally (after `v0.3.10`):
+
+```html
+<!-- page1.vue -->
+<script>
+import VueZoomer from 'vue-zoomer'
+
+export default {
+  components: {
+    VZoomer: VueZoomer.Zoomer,
+    VZoomerGallery: VueZoomer.Gallery,
+  },
+}
+</script>
+```
+
+You can also import the source files (after `v0.3.10`), rather than
+the minified umd bundle, for better debugging experience:
+```js
+import VueZoomer from 'vue-zoomer/src'
 ```
 
 Single usage:
