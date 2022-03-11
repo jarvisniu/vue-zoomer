@@ -6,4 +6,7 @@ export default {
     Vue.component('VZoomer', VueZoomer)
     Vue.component('VZoomerGallery', VueZoomerGallery)
   },
+  // for locally register
+  Zoomer: VueZoomer,
+  Gallery: VueZoomerGallery,
 }

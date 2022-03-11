@@ -33,13 +33,34 @@ Install:
 npm install vue-zoomer
 ```
 
-Import:
+Import and register globally:
 
 ```js
 import Vue from 'vue'
 import VueZoomer from 'vue-zoomer'
 
 Vue.use(VueZoomer)
+```
+
+Import and register locally (after `v0.3.10`):
+
+```html
+<!-- page1.vue -->
+<script>
+import VueZoomer from 'vue-zoomer'
+export default {
+  components: {
+    VZoomer: VueZoomer.Zoomer,
+    VZoomerGallery: VueZoomer.Gallery,
+  },
+}
+</script>
+```
+
+You can also import the source files (after `v0.3.10`), rather than
+the minified umd bundle, for better debugging experience:
+```js
+import VueZoomer from 'vue-zoomer/src'
 ```
 
 Single usage:

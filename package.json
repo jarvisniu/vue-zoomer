@@ -1,6 +1,6 @@
 {
   "name": "vue-zoomer",
-  "version": "0.4.0-beta.1",
+  "version": "0.4.0-beta.2",
   "description": "Zoom the image or other thing with mouse or touch",
   "main": "src/index.js",
   "module": "src/index.js",
@@ -22,8 +22,8 @@
     "vue": "^3.0.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^1.0.4",
-    "vite": "^2.0.0-beta.5"
+    "@vitejs/plugin-vue": "^2.2.4",
+    "vite": "^2.8.6"
   },
   "files": [
     "dist/**/*",
